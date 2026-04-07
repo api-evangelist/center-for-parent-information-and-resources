@@ -3,9 +3,9 @@ url: >-
   https://raw.githubusercontent.com/api-evangelist/center-for-parent-information-and-resources/refs/heads/main/apis.yml
 name: Center for Parent Information and Resources
 tags:
+  - Education
   - Federal Government
   - Parents
-  - Education
   - Special Needs
 type: Index
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
@@ -24,8 +24,8 @@ apis:
       center-for-parent-information-and-resources:center-for-parent-information-and-resources
     name: Center for Parent Information and Resources
     tags:
-      - Federal Government
       - Education
+      - Federal Government
     humanURL: https://www.parentcenterhub.org
     properties:
       - url: https://www.parentcenterhub.org
