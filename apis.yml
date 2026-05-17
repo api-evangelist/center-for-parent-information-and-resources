@@ -36,7 +36,7 @@ common:
     url: https://www.parentcenterhub.org/events/
   - type: Contact
     url: https://www.parentcenterhub.org/contact/
-  - type: Privacy Policy
+  - type: PrivacyPolicy
     url: https://www.parentcenterhub.org/privacy-policy/
 maintainers:
   - FN: Kin Lane
