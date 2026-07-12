@@ -28,6 +28,8 @@ description: >-
   browsing, newsletter subscription, and an embedded Google Calendar.
 apis: []
 common:
+  - type: DomainSecurity
+    url: security/center-for-parent-information-and-resources-domain-security.yml
   - type: Website
     url: https://www.parentcenterhub.org
   - type: Newsletter
@@ -38,6 +40,8 @@ common:
     url: https://www.parentcenterhub.org/contact/
   - type: PrivacyPolicy
     url: https://www.parentcenterhub.org/privacy-policy/
+  - url: https://www.parentcenterhub.org/feed/
+    type: Blog
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
