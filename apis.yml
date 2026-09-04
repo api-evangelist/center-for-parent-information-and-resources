@@ -46,7 +46,7 @@ image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/center-for
 access: 3rd-Party
 created: '2024-12-03'
 modified: '2026-04-23'
-position: Consumer
+position: Consuming
 specificationVersion: '0.23'
 description: >-
   The Center for Parent Information and Resources (CPIR) is a federally funded
