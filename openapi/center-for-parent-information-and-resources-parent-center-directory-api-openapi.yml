@@ -1,0 +1,587 @@
+openapi: 3.2.0
+info:
+  title: CPIR Parent Center Directory API
+  version: cn-api/v1
+  description: >-
+    Public, unauthenticated read access to the Center for Parent Information and Resources (CPIR)
+    national Parent Center directory — the machine-readable form of the "Find Your Parent Center"
+    finder at parentcenterhub.org/find-your-center/. Each entry is a Parent Training and Information
+    Center (PTI), Community Parent Resource Center (CPRC) or regional Parent Technical Assistance
+    Center, carrying its organization name, work address, geocoded latitude/longitude, telephone
+    numbers, email addresses, social profiles and public web link. Verified live on 2026-09-05 at
+    784+ published entries across 55 state and territory categories.
+
+    Anonymous access is read-only: the collection answers `Allow: GET` without credentials. The
+    POST/PUT/PATCH/DELETE methods declared on the same routes, and the `/settings` routes, require
+    an authenticated WordPress session and return `401 rest_forbidden` anonymously — they are
+    documented here as gated, not as a public surface.
+  contact:
+    name: Center for Parent Information and Resources
+    url: https://www.parentcenterhub.org/contact/
+  x-derived-from: https://www.parentcenterhub.org/wp-json/ route index (Connections Business Directory `cn-api/v1` namespace), plus live anonymous GET verification of each documented path
+  x-derived-on: '2026-09-05'
+  x-api-evangelist-note: >-
+    Third-party profile. CPIR publishes no developer program and no OpenAPI of its own; this documents
+    the anonymously readable directory API that its own site serves. Every path, parameter, enum and
+    default here was read from the server's published route-index schema on 2026-09-05 — nothing is
+    invented. Response shapes were read from live 200 responses. The `/account/*` routes are
+    transcribed from the route index only and were deliberately NOT invoked.
+servers:
+  - url: https://www.parentcenterhub.org/wp-json
+    description: CPIR WordPress REST API (Parent Center Hub)
+tags:
+  - name: Entries
+    description: Parent Center directory records — PTIs, CPRCs and regional Parent Technical Assistance Centers.
+  - name: Categories
+    description: The state and territory taxonomy the directory is organised by.
+  - name: Autocomplete
+    description: Type-ahead lookup over directory fields, backing the finder's search form.
+  - name: Account
+    description: Visitor account routes exposed by the directory plugin. Gated behind a request nonce; not invoked during profiling.
+paths:
+  /cn-api/v1:
+    get:
+      operationId: getDirectoryNamespaceIndex
+      summary: Directory namespace index
+      description: Route index for the `cn-api/v1` namespace, listing every directory route with its argument schema.
+      tags: [Entries]
+      parameters:
+        - name: context
+          in: query
+          description: Scope under which the request is made; determines fields present in response.
+          schema: { type: string, default: view }
+      responses:
+        '200':
+          description: Namespace route index.
+          content:
+            application/json:
+              schema: { type: object }
+  /cn-api/v1/entry:
+    get:
+      operationId: listDirectoryEntries
+      summary: List Parent Center directory entries
+      description: >-
+        Retrieve a paginated collection of published Parent Center records. Verified live at 784+
+        entries on 2026-09-05 paging at `per_page=100`.
+      tags: [Entries]
+      parameters:
+        - name: context
+          in: query
+          description: Scope under which the request is made; determines fields present in response.
+          schema: { type: string, default: view, enum: [view, embed, edit] }
+        - name: page
+          in: query
+          description: Current page of the collection.
+          schema: { type: integer, default: 1 }
+        - name: per_page
+          in: query
+          description: Maximum number of items to be returned in result set.
+          schema: { type: integer, default: 10 }
+        - name: search
+          in: query
+          description: Limit results to those matching a string.
+          schema: { type: string }
+        - name: exclude
+          in: query
+          description: Ensure result set excludes specific IDs.
+          schema: { type: array, items: { type: integer }, default: [] }
+        - name: include
+          in: query
+          description: Limit result set to specific IDs.
+          schema: { type: array, items: { type: integer }, default: [] }
+        - name: offset
+          in: query
+          description: Offset the result set by a specific number of items.
+          schema: { type: integer }
+        - name: tax_relation
+          in: query
+          description: Limit result set based on relationship between multiple taxonomies.
+          schema: { type: string, enum: [AND, OR] }
+        - name: categories
+          in: query
+          description: Limit result set to items with specific terms assigned in the categories taxonomy.
+          schema: { type: array, items: { type: integer }, default: [] }
+        - name: categories_exclude
+          in: query
+          description: Limit result set to items except those with specific terms assigned in the categories taxonomy.
+          schema: { type: array, items: { type: integer }, default: [] }
+      responses:
+        '200':
+          description: A collection of directory entries.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Entry' }
+        '400':
+          $ref: '#/components/responses/InvalidParam'
+    post:
+      operationId: createDirectoryEntry
+      summary: Create a directory entry (authenticated)
+      description: >-
+        Declared on the route index. Requires an authenticated WordPress session with directory
+        capabilities; anonymous callers receive `401 rest_forbidden`. Not part of the public surface.
+      tags: [Entries]
+      security:
+        - cookieNonce: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EntryWrite' }
+      responses:
+        '201':
+          description: Entry created.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Entry' }
+        '401':
+          $ref: '#/components/responses/Forbidden'
+  /cn-api/v1/entry/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Unique identifier for the entry.
+        schema: { type: integer }
+    get:
+      operationId: getDirectoryEntry
+      summary: Retrieve one Parent Center
+      description: Retrieve a single published Parent Center record by its numeric identifier.
+      tags: [Entries]
+      parameters:
+        - name: context
+          in: query
+          description: Scope under which the request is made; determines fields present in response.
+          schema: { type: string, default: view, enum: [view, embed, edit] }
+      responses:
+        '200':
+          description: A single directory entry.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Entry' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      operationId: updateDirectoryEntry
+      summary: Update a directory entry (authenticated)
+      description: Declared on the route index; requires an authenticated session. Anonymous callers receive `401 rest_forbidden`.
+      tags: [Entries]
+      security:
+        - cookieNonce: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EntryWrite' }
+      responses:
+        '200':
+          description: Entry updated.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Entry' }
+        '401':
+          $ref: '#/components/responses/Forbidden'
+    delete:
+      operationId: deleteDirectoryEntry
+      summary: Delete a directory entry (authenticated)
+      description: >-
+        Declared on the route index; requires an authenticated session. The route index states
+        `force` must be true because the resource does not support trashing — there is therefore no
+        published restore path for a deleted entry.
+      tags: [Entries]
+      security:
+        - cookieNonce: []
+      parameters:
+        - name: force
+          in: query
+          description: Required to be true, as resource does not support trashing.
+          schema: { type: boolean, default: false }
+      responses:
+        '200':
+          description: Entry deleted.
+        '401':
+          $ref: '#/components/responses/Forbidden'
+  /cn-api/v1/entry/{id}/moderate:
+    post:
+      operationId: moderateDirectoryEntry
+      summary: Approve or unapprove an entry (authenticated)
+      description: >-
+        Declared on the route index; requires an authenticated session with moderation capability.
+        This is the reversal path for directory submissions — `approve` and `unapprove` are inverse
+        actions on the same record. No time window is published for it.
+      tags: [Entries]
+      security:
+        - cookieNonce: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier for the entry.
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  enum: [approve, unapprove]
+                  description: Moderation action to apply.
+      responses:
+        '200':
+          description: Moderation applied.
+        '401':
+          $ref: '#/components/responses/Forbidden'
+  /cn-api/v1/category:
+    get:
+      operationId: listDirectoryCategories
+      summary: List directory categories
+      description: >-
+        Retrieve the taxonomy the directory is organised by. Verified live on 2026-09-05 at 55 terms —
+        the 50 US states plus territories and national groupings.
+      tags: [Categories]
+      parameters:
+        - name: context
+          in: query
+          schema: { type: string, default: view }
+          description: Scope under which the request is made; determines fields present in response.
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+          description: Current page of the collection.
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 10 }
+          description: Maximum number of items to be returned in result set.
+        - name: search
+          in: query
+          schema: { type: string }
+          description: Limit results to those matching a string.
+      responses:
+        '200':
+          description: A collection of category terms.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Category' }
+  /cn-api/v1/category/{id}:
+    get:
+      operationId: getDirectoryCategory
+      summary: Retrieve one directory category
+      description: Retrieve a single state or territory term by its numeric identifier.
+      tags: [Categories]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier for the term.
+          schema: { type: integer }
+        - name: context
+          in: query
+          schema: { type: string, default: view }
+          description: Scope under which the request is made; determines fields present in response.
+      responses:
+        '200':
+          description: A single category term.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Category' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /cn-api/v1/autocomplete/{type}:
+    get:
+      operationId: autocompleteDirectoryField
+      summary: Type-ahead lookup over a directory field
+      description: >-
+        Search one indexed directory field and return matching raw records. Backs the finder's
+        search form. Verified live on 2026-09-05 for `organization` and `city`.
+      tags: [Autocomplete]
+      parameters:
+        - name: type
+          in: path
+          required: true
+          description: The directory field to search.
+          schema:
+            type: string
+            enum: [name, last_name, title, organization, department, district, county, city, state, zipcode, country]
+        - name: context
+          in: query
+          description: Scope under which the request is made; determines fields present in response.
+          schema: { type: string, default: view }
+        - name: page
+          in: query
+          description: Current page of the collection.
+          schema: { type: integer, default: 1 }
+        - name: per_page
+          in: query
+          description: Maximum number of items to be returned in result set.
+          schema: { type: integer, default: 10 }
+        - name: search
+          in: query
+          description: Limit results to those matching a string.
+          schema: { type: string }
+        - name: offset
+          in: query
+          description: Offset the result set by a specific number of items.
+          schema: { type: integer }
+        - name: order
+          in: query
+          description: Order sort attribute ascending or descending.
+          schema: { type: string, default: asc, enum: [asc, desc] }
+        - name: orderby
+          in: query
+          description: Sort collection by resource attribute.
+          schema:
+            type: string
+            default: name
+            enum: [id, include, name, slug, term_group, description, count]
+      responses:
+        '200':
+          description: Matching raw directory rows for the requested field.
+          content:
+            application/json:
+              schema: { type: array, items: { type: object } }
+  /cn-api/v1/recently_viewed:
+    get:
+      operationId: listRecentlyViewedEntries
+      summary: List recently viewed entries
+      description: >-
+        Session-scoped list of entries the current visitor has viewed. Returns an empty array for an
+        anonymous caller with no session (verified live 2026-09-05).
+      tags: [Entries]
+      responses:
+        '200':
+          description: Recently viewed entries for this session.
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Entry' } }
+  /cn-api/v1/account/login:
+    post:
+      operationId: accountLogin
+      summary: Visitor account sign-in
+      description: >-
+        Transcribed from the published route index; NOT invoked during profiling. Requires a
+        `_cnonce` request token issued by the site, so it is not callable as a standalone API.
+      tags: [Account]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [_cnonce, log, pwd]
+              properties:
+                _cnonce: { type: string, description: The request token. }
+                log: { type: string, description: Username or email. }
+                pwd: { type: string, description: Password. }
+                redirect_to: { type: string, description: The URL to redirect to after form submission. }
+                rememberme: { type: string, enum: ['0', '1'], description: Remember Me }
+      responses:
+        '200':
+          description: Sign-in result.
+  /cn-api/v1/account/register:
+    post:
+      operationId: accountRegister
+      summary: Visitor account registration
+      description: Transcribed from the published route index; NOT invoked during profiling. Requires a `_cnonce` request token.
+      tags: [Account]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [_cnonce, user_login, user_email]
+              properties:
+                _cnonce: { type: string, description: The request token. }
+                user_login: { type: string, description: Username. }
+                user_email: { type: string, description: Email. }
+                redirect_to: { type: string, description: The URL to redirect to after form submission. }
+      responses:
+        '200':
+          description: Registration result.
+  /cn-api/v1/account/request-reset-password:
+    post:
+      operationId: accountRequestResetPassword
+      summary: Request a password reset
+      description: Transcribed from the published route index; NOT invoked during profiling. Requires a `_cnonce` request token.
+      tags: [Account]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [_cnonce, log]
+              properties:
+                _cnonce: { type: string, description: The request token. }
+                log: { type: string, description: Username or email. }
+                redirect_to: { type: string, description: The URL to redirect to after form submission. }
+      responses:
+        '200':
+          description: Reset request result.
+  /cn-api/v1/account/reset-password:
+    post:
+      operationId: accountResetPassword
+      summary: Complete a password reset
+      description: Transcribed from the published route index; NOT invoked during profiling. Requires a `_cnonce` request token and a reset key.
+      tags: [Account]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [_cnonce, pass1, pass2, key]
+              properties:
+                _cnonce: { type: string, description: The request token. }
+                pass1: { type: string, description: New password. }
+                pass2: { type: string, description: Confirm password. }
+                pw_weak: { type: boolean, description: Confirm use of weak password. }
+                key: { type: string, description: Password reset key. }
+                redirect_to: { type: string, description: The URL to redirect to after form submission. }
+      responses:
+        '200':
+          description: Reset result.
+components:
+  securitySchemes:
+    cookieNonce:
+      type: apiKey
+      in: header
+      name: X-WP-Nonce
+      description: >-
+        WordPress cookie authentication paired with an `X-WP-Nonce` header. The server advertises
+        `Access-Control-Allow-Headers: Authorization, X-WP-Nonce, Content-Disposition, Content-MD5,
+        Content-Type`. Read routes documented here need no credential.
+  responses:
+    Forbidden:
+      description: The caller is not authenticated or lacks the capability for this route.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: No resource matched the requested identifier.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    InvalidParam:
+      description: One or more request parameters failed validation.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    Error:
+      type: object
+      description: >-
+        The WordPress REST error envelope, observed live on this host. Not RFC 9457 —
+        the media type is `application/json`, not `application/problem+json`.
+      properties:
+        code: { type: string, description: Machine-readable error slug, e.g. `rest_forbidden`. }
+        message: { type: string, description: Human-readable message. }
+        data:
+          type: object
+          properties:
+            status: { type: integer, description: The HTTP status code, repeated in the body. }
+    Rendered:
+      type: object
+      description: A rendered text field. WordPress returns display strings HTML-entity encoded.
+      properties:
+        rendered: { type: string }
+    Address:
+      type: object
+      description: A postal address attached to an entry, in vCard/hCard field naming.
+      properties:
+        id: { type: integer }
+        order: { type: integer }
+        preferred: { type: boolean }
+        type: { type: string, description: 'Address kind, e.g. `work`.' }
+        street_address: { $ref: '#/components/schemas/Rendered' }
+        extended_address: { $ref: '#/components/schemas/Rendered' }
+        extended_address_2: { $ref: '#/components/schemas/Rendered' }
+        extended_address_3: { $ref: '#/components/schemas/Rendered' }
+        district: { $ref: '#/components/schemas/Rendered' }
+        county: { $ref: '#/components/schemas/Rendered' }
+        locality: { $ref: '#/components/schemas/Rendered' }
+        region: { $ref: '#/components/schemas/Rendered' }
+        postal_code: { $ref: '#/components/schemas/Rendered' }
+        country_name: { $ref: '#/components/schemas/Rendered' }
+        latitude: { type: string, description: Decimal latitude as a string. }
+        longitude: { type: string, description: Decimal longitude as a string. }
+        visibility: { type: string, enum: [public, private, unlisted] }
+    Entry:
+      type: object
+      description: >-
+        A Parent Center directory record. Field naming follows the vCard/hCard vocabulary
+        (`fn`, `adr`, `tel`, `email`, `org`, `honorific_prefix`, `honorific_suffix`).
+      properties:
+        id: { type: integer }
+        type: { type: string, enum: [family, individual, organization] }
+        link: { type: string, format: uri, description: Public page for this Parent Center on parentcenterhub.org. }
+        slug: { type: string }
+        fn: { $ref: '#/components/schemas/Rendered' }
+        honorific_prefix: { $ref: '#/components/schemas/Rendered' }
+        given_name: { $ref: '#/components/schemas/Rendered' }
+        additional_name: { $ref: '#/components/schemas/Rendered' }
+        family_name: { $ref: '#/components/schemas/Rendered' }
+        honorific_suffix: { $ref: '#/components/schemas/Rendered' }
+        job_title: { $ref: '#/components/schemas/Rendered' }
+        org:
+          type: object
+          properties:
+            organization_name: { $ref: '#/components/schemas/Rendered' }
+            organization_unit: { $ref: '#/components/schemas/Rendered' }
+        contact:
+          type: object
+          properties:
+            given_name: { $ref: '#/components/schemas/Rendered' }
+            family_name: { $ref: '#/components/schemas/Rendered' }
+        adr: { type: array, items: { $ref: '#/components/schemas/Address' } }
+        tel: { type: array, items: { type: object }, description: Telephone numbers attached to an entry. }
+        email: { type: array, items: { type: object }, description: Email addresses attached to an entry. }
+        social: { type: array, items: { type: object }, description: Social networks attached to an entry. }
+        bio: { $ref: '#/components/schemas/Rendered' }
+        excerpt: { $ref: '#/components/schemas/Rendered' }
+        notes: { $ref: '#/components/schemas/Rendered' }
+        images: { type: object, description: Images attached to an entry. }
+        visibility: { type: string, enum: [public, private, unlisted] }
+        status: { type: string, enum: [approved, pending] }
+    EntryWrite:
+      type: object
+      description: Write payload for an entry, transcribed from the route index argument schema.
+      properties:
+        type: { type: string, enum: [family, individual, organization] }
+        slug: { type: string }
+        fn: { type: object }
+        honorific_prefix: { type: object }
+        given_name: { type: object }
+        additional_name: { type: object }
+        family_name: { type: object }
+        honorific_suffix: { type: object }
+        job_title: { type: object }
+        org: { type: object }
+        contact: { type: object }
+        adr: { type: array, items: { type: object } }
+        tel: { type: array, items: { type: object } }
+        email: { type: array, items: { type: object } }
+        social: { type: array, items: { type: object } }
+        bio: { type: object }
+        excerpt: { type: object }
+        notes: { type: object }
+        images: { type: object }
+        visibility: { type: string, enum: [public, private, unlisted] }
+        status: { type: string, enum: [approved, pending] }
+    Category:
+      type: object
+      description: A state, territory or grouping term the directory is organised by.
+      properties:
+        id: { type: integer }
+        count: { type: integer }
+        description: { type: string }
+        link: { type: string, format: uri }
+        name: { type: string }
+        slug: { type: string }
+        taxonomy: { type: string }
+        parent: { type: integer }

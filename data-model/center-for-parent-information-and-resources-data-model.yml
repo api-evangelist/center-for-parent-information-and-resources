@@ -1,0 +1,128 @@
+generated: '2026-09-05'
+method: derived
+source: >-
+  Derived from openapi/center-for-parent-information-and-resources-parent-center-directory-api-openapi.yml
+  and openapi/center-for-parent-information-and-resources-geography-reference-api-openapi.yml, both of
+  which were read from the published wp-json route index and verified against live 200 responses on
+  2026-09-05.
+note: >-
+  Identifiers on this surface are bare integers with no type prefix — an entry id and a category id
+  are indistinguishable out of context. There is no published object reference to enrich this from;
+  the graph below is computed from the contract.
+entities:
+  - name: Entry
+    description: >-
+      A Parent Center — a Parent Training and Information Center (PTI), Community Parent Resource
+      Center (CPRC) or regional Parent Technical Assistance Center. The root object of the surface.
+    id_field: id
+    id_form: integer
+    id_prefix: null
+    count_observed: 784
+    count_note: Established on 2026-09-05 by paging /cn-api/v1/entry at per_page=100 until an empty page.
+    discriminator:
+      field: type
+      values: [family, individual, organization]
+      note: Every observed CPIR record is of type `organization`.
+    relationships:
+      - kind: has_many
+        target: Address
+        via: adr
+      - kind: has_many
+        target: Telephone
+        via: tel
+      - kind: has_many
+        target: Email
+        via: email
+      - kind: has_many
+        target: SocialProfile
+        via: social
+      - kind: has_many
+        target: Category
+        via: categories
+        note: >-
+          Expressed on the read side as the `categories` / `categories_exclude` / `tax_relation`
+          query filters on the collection rather than as an embedded array in the entry body.
+      - kind: has_one
+        target: Organization
+        via: org
+  - name: Organization
+    description: The organization name and unit for an entry of type `organization`.
+    id_field: null
+    embedded_in: Entry
+  - name: Address
+    description: >-
+      A postal address in vCard/hCard field naming, carrying a geocoded latitude and longitude as
+      decimal strings. This is what makes the directory mappable.
+    id_field: id
+    id_form: integer
+    embedded_in: Entry
+    relationships:
+      - kind: belongs_to
+        target: Entry
+        via: id
+        note: The address `id` observed on entry 35 equals the entry id, so it is not an independent key.
+      - kind: references
+        target: Region
+        via: region
+        note: >-
+          A two-letter subdivision code (e.g. "IA") that matches the keys returned by
+          /cn-api/v1/countries/{code}/regions. The link is by value, not by an id.
+  - name: Telephone
+    description: A telephone number attached to an entry.
+    embedded_in: Entry
+  - name: Email
+    description: An email address attached to an entry.
+    embedded_in: Entry
+  - name: SocialProfile
+    description: A social network profile attached to an entry.
+    embedded_in: Entry
+  - name: Category
+    description: >-
+      A term in the taxonomy the directory is organised by. On CPIR this is the US state and
+      territory list — 55 terms observed on 2026-09-05 (Alabama, Alaska, Arizona, ...).
+    id_field: id
+    id_form: integer
+    count_observed: 55
+    relationships:
+      - kind: has_many
+        target: Entry
+        via: categories
+      - kind: belongs_to
+        target: Category
+        via: parent
+        note: Self-referential hierarchy; `parent` is 0 for a top-level term.
+  - name: Country
+    description: An ISO 3166-1 country reference record.
+    id_field: iso_3166_1_alpha2
+    id_form: 'string, lowercase alpha-2 in the path'
+    relationships:
+      - kind: has_many
+        target: Region
+        via: /countries/{code}/regions
+      - kind: has_one
+        target: CountryGeometry
+        via: /countries/{code}/geojson
+  - name: Region
+    description: An administrative subdivision with a centroid and bounding box.
+    id_field: code
+    id_form: 'string, e.g. IA'
+    relationships:
+      - kind: belongs_to
+        target: Country
+        via: path segment
+  - name: CountryGeometry
+    description: A GeoJSON FeatureCollection describing a country boundary.
+    relationships:
+      - kind: belongs_to
+        target: Country
+        via: path segment
+join_notes:
+  - >-
+    The directory graph and the geography graph are joined only by VALUE, not by identifier: an
+    address `region` string ("IA") matches a key in the regions response for country `us`. There is
+    no foreign key and no link relation between the two namespaces, so a consumer building a map
+    has to make that join itself.
+  - >-
+    Text fields are returned wrapped as {"rendered": "..."} and are HTML-entity encoded — entry 35's
+    `fn.rendered` is "Access For Special Kids Resource Center (ASK) &#8211; PTI". A consumer must
+    unescape before display or comparison.

@@ -1,0 +1,51 @@
+generated: '2026-09-05'
+method: derived
+status: candidate
+source: >-
+  No MCP server exists. Searched the provider surface and probed for one on 2026-09-05:
+  /.well-known/mcp.json returned 404 on both www.parentcenterhub.org and parentcenterhub.org, no
+  `mcp` namespace appears among the 34 namespaces registered at
+  https://www.parentcenterhub.org/wp-json/, and CPIR has no GitHub organisation (GitHub user and
+  repository search for "parentcenterhub" returned 0 results on 2026-09-05). The tool list below is
+  DERIVED from the OpenAPI operations in openapi/, not published by CPIR.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: none
+  verified: probed
+note: >-
+  This is a candidate tool list, not a server. CPIR ships nothing an MCP client can connect to. The
+  candidate is worth recording because the underlying surface is genuinely agent-usable: it is
+  anonymous, read-only, and answers the single question the site exists to answer — "which Parent
+  Center serves this family?".
+tools:
+  - name: find_parent_centers
+    description: Search the national Parent Center directory by free text, returning matching centers.
+    rest: [listDirectoryEntries]
+    input_hint: 'search, page, per_page'
+  - name: list_parent_centers_by_state
+    description: List the Parent Centers assigned to a given state or territory term.
+    rest: [listDirectoryEntries]
+    input_hint: 'categories, page, per_page'
+  - name: get_parent_center
+    description: Retrieve one Parent Center record with its address, phone, email and geocoordinates.
+    rest: [getDirectoryEntry]
+    input_hint: id
+  - name: list_states
+    description: List the state and territory terms the directory is organised by.
+    rest: [listDirectoryCategories]
+    input_hint: 'search, per_page'
+  - name: autocomplete_directory_field
+    description: Type-ahead lookup over an indexed directory field such as organization, city or state.
+    rest: [autocompleteDirectoryField]
+    input_hint: 'type, search'
+  - name: get_state_geography
+    description: Retrieve a US state's centroid and bounding box for map framing.
+    rest: [getCountryRegion]
+    input_hint: 'code, region'
+  - name: get_cpir_page_metadata
+    description: Retrieve oEmbed data or the schema.org SEO head for a CPIR page URL.
+    rest: [getOEmbedData, getSeoHead]
+    input_hint: url

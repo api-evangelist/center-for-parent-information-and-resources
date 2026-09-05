@@ -1,5 +1,6 @@
 aid: center-for-parent-information-and-resources
-url: https://raw.githubusercontent.com/api-evangelist/center-for-parent-information-and-resources/refs/heads/main/apis.yml
+url: 
+  https://raw.githubusercontent.com/api-evangelist/center-for-parent-information-and-resources/refs/heads/main/apis.yml
 name: Center for Parent Information and Resources
 tags:
   - Disability
@@ -21,43 +22,168 @@ tags_raw:
   - Special Needs
 type: Index
 deliveryModel:
-  model: unknown
+  model: provider-hosted
   open_source: false
   commercial: false
-  callable_host: false
-  label: Delivery model not determined — needs a product licence on record
-  confidence: low
+  callable_host: true
+  label: 'Provider-hosted, non-commercial: CPIR serves the API from its own host at no cost'
+  confidence: high
   source:
-  - none
-  generated: '2026-08-28'
-  method: derived
+    - live probe of https://www.parentcenterhub.org/wp-json/ on 2026-09-05
+  generated: '2026-09-05'
+  method: probed
 accessModel:
-  pricing: unknown
-  onboarding: unknown
+  pricing: free
+  onboarding: none
   trial: false
-  try_now: false
-  public: false
-  label: Unknown
-  confidence: low
-  source: []
-  generated: '2026-07-22'
-  method: derived
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/center-for-parent-information-and-resources.png
+  try_now: true
+  public: true
+  label: Free and anonymous — no signup, no credential, no quota
+  confidence: high
+  source:
+    - live anonymous 200 responses from https://www.parentcenterhub.org/wp-json/cn-api/v1/entry on 
+      2026-09-05
+  generated: '2026-09-05'
+  method: probed
+image: 
+  https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/center-for-parent-information-and-resources.png
 access: 3rd-Party
 created: '2024-12-03'
-modified: '2026-04-23'
+modified: '2026-09-05'
 position: Consuming
 specificationVersion: '0.23'
 description: >-
-  The Center for Parent Information and Resources (CPIR) is a federally funded
-  central hub of information and products for the national network of Parent
-  Training and Information Centers (PTIs) and Community Parent Resource Centers
-  (CPRCs). CPIR supports families and youth, with a focus on children and youth
-  with disabilities, delivering resources via the Parent Center Hub website,
-  the Buzz from the Hub newsletter, and an events calendar. No public developer
-  API has been identified; content and updates are delivered through website
-  browsing, newsletter subscription, and an embedded Google Calendar.
-apis: []
+  The Center for Parent Information and Resources (CPIR) is the federally funded central hub of information
+  and products for the national network of Parent Training and Information Centers (PTIs) and Community
+  Parent Resource Centers (CPRCs). An OSEP-funded project operated by the SPAN Parent Advocacy Network,
+  CPIR supports families and youth with a focus on children with disabilities, delivering resources through
+  the Parent Center Hub website, the Buzz from the Hub newsletter, webinars, glossaries and an events
+  calendar. CPIR runs no developer program and publishes no API documentation, but its own host serves
+  a real anonymous read-only JSON API: the WordPress REST API at parentcenterhub.org/wp-json exposed 34
+  namespaces and 717 routes on 2026-09-05, including the Connections directory namespace cn-api/v1 that
+  carries the national Parent Center directory (784+ geocoded centers across 55 state and territory terms),
+  plus ISO 3166-1 country reference data, US state geography and GeoJSON, an oEmbed 1.0 provider endpoint,
+  and schema.org structured data. The WordPress content collections (posts, pages, media, users, search)
+  are closed to anonymous callers and return 401 rest_forbidden; article content is available through
+  the site RSS feed.
+apis:
+  - aid: center-for-parent-information-and-resources:cpir-parent-center-directory-api
+    name: CPIR Parent Center Directory API
+    description: >-
+      Public, unauthenticated read access to the national Parent Center directory - the machine-readable
+      form of the Find Your Parent Center finder. Each entry is a Parent Training and Information Center
+      (PTI), Community Parent Resource Center (CPRC) or regional Parent Technical Assistance Center, carrying
+      organization name, work address, geocoded latitude and longitude, telephone numbers, email addresses
+      and a public link, in vCard/hCard field naming. Verified live on 2026-09-05 at 784+ published entries
+      across 55 state and territory categories. Anonymous access is read-only; the collection answers
+      Allow GET without credentials, and CPIR issues no API keys.
+    humanURL: https://www.parentcenterhub.org/find-your-center/
+    baseURL: https://www.parentcenterhub.org/wp-json
+    tags:
+      - Directory
+      - Disability
+      - Education
+      - Families
+      - Parent Centers
+      - Geolocation
+    properties:
+      - type: OpenAPI
+        url: 
+          openapi/center-for-parent-information-and-resources-parent-center-directory-api-openapi.yml
+      - type: Overlay
+        url: 
+          overlays/center-for-parent-information-and-resources-parent-center-directory-api-overlay.yaml
+      - type: Authentication
+        url: authentication/center-for-parent-information-and-resources-authentication.yml
+      - type: Conventions
+        url: conventions/center-for-parent-information-and-resources-conventions.yml
+      - type: ErrorCatalog
+        url: errors/center-for-parent-information-and-resources-problem-types.yml
+      - type: Lifecycle
+        url: lifecycle/center-for-parent-information-and-resources-lifecycle.yml
+      - type: DataModel
+        url: data-model/center-for-parent-information-and-resources-data-model.yml
+      - type: RateLimits
+        url: rate-limits/center-for-parent-information-and-resources-rate-limits.yml
+      - type: Conformance
+        url: conformance/center-for-parent-information-and-resources-conformance.yml
+      - type: AgentSkill
+        url: skills/_index.yml
+      - type: X-MCPServerCandidate
+        url: mcp/center-for-parent-information-and-resources-mcp.yml
+  - aid: center-for-parent-information-and-resources:cpir-geography-reference-api
+    name: CPIR Geography Reference API
+    description: >-
+      Public, unauthenticated reference data served alongside the Parent Center directory: ISO 3166-1
+      country records with alpha-2 and alpha-3 codes, ISO 4217 currency and calling codes; administrative
+      subdivisions with centroids and bounding boxes (US states and territories); and country boundary
+      geometry as GeoJSON (RFC 7946). This is the geography layer the Find Your Parent Center map is built
+      on. Verified live on 2026-09-05.
+    humanURL: https://www.parentcenterhub.org/find-your-center/
+    baseURL: https://www.parentcenterhub.org/wp-json
+    tags:
+      - Geolocation
+      - Reference Data
+      - GeoJSON
+      - Countries
+    properties:
+      - type: OpenAPI
+        url: openapi/center-for-parent-information-and-resources-geography-reference-api-openapi.yml
+      - type: Overlay
+        url: 
+          overlays/center-for-parent-information-and-resources-geography-reference-api-overlay.yaml
+      - type: Conformance
+        url: conformance/center-for-parent-information-and-resources-conformance.yml
+      - type: DataModel
+        url: data-model/center-for-parent-information-and-resources-data-model.yml
+      - type: Conventions
+        url: conventions/center-for-parent-information-and-resources-conventions.yml
+  - aid: center-for-parent-information-and-resources:cpir-oembed-api
+    name: CPIR oEmbed API
+    description: >-
+      Public, unauthenticated oEmbed 1.0 provider endpoint for parentcenterhub.org. Given the URL of any
+      CPIR page it returns a conformant oEmbed document naming the provider, title, author and embeddable
+      HTML - the standards-based way for another site or an agent to cite or embed CPIR content. Verified
+      live on 2026-09-05 returning provider_name 'Center for Parent Information and Resources'.
+    humanURL: https://www.parentcenterhub.org/the-cpir-resource-center/
+    baseURL: https://www.parentcenterhub.org/wp-json
+    tags:
+      - oEmbed
+      - Content
+      - Embedding
+    properties:
+      - type: OpenAPI
+        url: openapi/center-for-parent-information-and-resources-oembed-api-openapi.yml
+      - type: Overlay
+        url: overlays/center-for-parent-information-and-resources-oembed-api-overlay.yaml
+      - type: Conformance
+        url: conformance/center-for-parent-information-and-resources-conformance.yml
+  - aid: center-for-parent-information-and-resources:cpir-site-metadata-api
+    name: CPIR Site Metadata API
+    description: >-
+      The anonymously readable metadata layer of the parentcenterhub.org WordPress REST API - the discovery
+      root enumerating 34 namespaces and 717 routes with their argument schemas, the registered content
+      types, taxonomies and publication statuses, and the Yoast SEO head document carrying schema.org
+      JSON-LD for any CPIR URL. Note that the WordPress content collections on this host (posts, pages,
+      media, categories, tags, users, search) are NOT public: every one returns 401 rest_forbidden to
+      an anonymous caller, verified 2026-09-05. Article content is available through the site RSS feed
+      instead.
+    humanURL: https://www.parentcenterhub.org/
+    baseURL: https://www.parentcenterhub.org/wp-json
+    tags:
+      - Metadata
+      - Discovery
+      - SEO
+      - Structured Data
+    properties:
+      - type: OpenAPI
+        url: openapi/center-for-parent-information-and-resources-site-metadata-api-openapi.yml
+      - type: Overlay
+        url: overlays/center-for-parent-information-and-resources-site-metadata-api-overlay.yaml
+      - type: Conformance
+        url: conformance/center-for-parent-information-and-resources-conformance.yml
+      - type: ErrorCatalog
+        url: errors/center-for-parent-information-and-resources-problem-types.yml
 common:
   - type: DomainSecurity
     url: security/center-for-parent-information-and-resources-domain-security.yml
@@ -65,14 +191,48 @@ common:
     url: https://www.parentcenterhub.org
   - type: Newsletter
     url: https://www.parentcenterhub.org/buzz/
-  - type: Events
-    url: https://www.parentcenterhub.org/events/
-  - type: Contact
-    url: https://www.parentcenterhub.org/contact/
-  - type: PrivacyPolicy
-    url: https://www.parentcenterhub.org/privacy-policy/
   - url: https://www.parentcenterhub.org/feed/
     type: Blog
+  - type: Contact
+    url: https://www.parentcenterhub.org/contact-us/
+  - type: Support
+    url: https://www.parentcenterhub.org/contact-us/
+  - type: About
+    url: https://www.parentcenterhub.org/whatiscpir/
+  - type: Events
+    url: 
+      https://calendar.google.com/calendar/embed?src=cpir.calendar%40gmail.com&ctz=America%2FNew_York
+  - type: Login
+    url: https://www.parentcenterhub.org/parentcenter-login
+  - type: LLMsTxt
+    url: llms/center-for-parent-information-and-resources-llms.txt
+  - type: Conventions
+    url: conventions/center-for-parent-information-and-resources-conventions.yml
+  - type: ErrorCatalog
+    url: errors/center-for-parent-information-and-resources-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/center-for-parent-information-and-resources-lifecycle.yml
+  - type: Conformance
+    url: conformance/center-for-parent-information-and-resources-conformance.yml
+  - type: DataModel
+    url: data-model/center-for-parent-information-and-resources-data-model.yml
+  - type: RateLimits
+    url: rate-limits/center-for-parent-information-and-resources-rate-limits.yml
+  - type: Plans
+    url: plans/center-for-parent-information-and-resources-plans-pricing.yml
+  - type: Packages
+    url: packages/center-for-parent-information-and-resources-packages.yml
+  - type: AgentSkill
+    url: skills/_index.yml
+  - type: X-MCPServerCandidate
+    url: mcp/center-for-parent-information-and-resources-mcp.yml
+  - type: Authentication
+    url: authentication/center-for-parent-information-and-resources-authentication.yml
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
+x-enrichment:
+  date: '2026-09-05'
+  status: enriched
+  artifacts_added: 25
+  pass: local-v3

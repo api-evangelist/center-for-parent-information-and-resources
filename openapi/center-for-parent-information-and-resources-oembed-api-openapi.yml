@@ -1,0 +1,120 @@
+openapi: 3.2.0
+info:
+  title: CPIR oEmbed API
+  version: oembed/1.0
+  description: >-
+    Public, unauthenticated oEmbed 1.0 provider endpoint for parentcenterhub.org. Given the URL of
+    any CPIR page or resource it returns an oEmbed rich/link response naming the provider, title,
+    author and embeddable HTML — the standards-based way for another site or an agent to reference
+    CPIR content. Verified live on 2026-09-05.
+  contact:
+    name: Center for Parent Information and Resources
+    url: https://www.parentcenterhub.org/contact/
+  x-derived-from: https://www.parentcenterhub.org/wp-json/ route index (`oembed/1.0` namespace) plus a live anonymous GET of /oembed/1.0/embed
+  x-derived-on: '2026-09-05'
+  x-api-evangelist-note: Third-party profile. Parameters and defaults read from the server's published route index; the 200 response shape observed live on 2026-09-05.
+servers:
+  - url: https://www.parentcenterhub.org/wp-json
+    description: CPIR WordPress REST API (Parent Center Hub)
+tags:
+  - name: oEmbed
+    description: oEmbed 1.0 provider endpoints.
+paths:
+  /oembed/1.0/embed:
+    get:
+      operationId: getOEmbedData
+      summary: Fetch oEmbed data for a CPIR URL
+      description: >-
+        Return oEmbed 1.0 data for a resource on parentcenterhub.org. Verified live on 2026-09-05
+        against the site home page, returning `provider_name` "Center for Parent Information and
+        Resources".
+      tags: [oEmbed]
+      parameters:
+        - name: url
+          in: query
+          required: true
+          description: The URL of the resource for which to fetch oEmbed data.
+          schema: { type: string, format: uri }
+        - name: format
+          in: query
+          description: The oEmbed format to use.
+          schema: { type: string, default: json }
+        - name: maxwidth
+          in: query
+          description: The maximum width of the embed frame in pixels.
+          schema: { type: integer, default: 600 }
+      responses:
+        '200':
+          description: An oEmbed 1.0 response document.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OEmbedResponse' }
+        '404':
+          description: The URL is not a resource this provider can embed.
+  /oembed/1.0/proxy:
+    get:
+      operationId: proxyOEmbedRequest
+      summary: Proxy an oEmbed request (authenticated)
+      description: >-
+        Declared on the route index. Requires an authenticated WordPress session; anonymous callers
+        receive `401 rest_forbidden` (verified live 2026-09-05). Not part of the public surface.
+      tags: [oEmbed]
+      security:
+        - cookieNonce: []
+      parameters:
+        - name: url
+          in: query
+          required: true
+          description: The URL of the resource for which to fetch oEmbed data.
+          schema: { type: string, format: uri }
+        - name: format
+          in: query
+          description: The oEmbed format to use.
+          schema: { type: string, default: json, enum: [json, xml] }
+        - name: maxwidth
+          in: query
+          description: The maximum width of the embed frame in pixels.
+          schema: { type: integer, default: 600 }
+        - name: maxheight
+          in: query
+          description: The maximum height of the embed frame in pixels.
+          schema: { type: integer }
+      responses:
+        '200':
+          description: A proxied oEmbed response document.
+        '401':
+          description: The caller is not authenticated.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+components:
+  securitySchemes:
+    cookieNonce:
+      type: apiKey
+      in: header
+      name: X-WP-Nonce
+      description: WordPress cookie authentication paired with an `X-WP-Nonce` header.
+  schemas:
+    Error:
+      type: object
+      properties:
+        code: { type: string }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            status: { type: integer }
+    OEmbedResponse:
+      type: object
+      description: An oEmbed 1.0 response document.
+      properties:
+        version: { type: string, enum: ['1.0'] }
+        provider_name: { type: string }
+        provider_url: { type: string, format: uri }
+        title: { type: string }
+        type: { type: string }
+        author_name: { type: string }
+        author_url: { type: string, format: uri }
+        html: { type: string }
+        width: { type: integer }
+        height: { type: integer }

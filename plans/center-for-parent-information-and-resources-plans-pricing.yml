@@ -1,0 +1,33 @@
+generated: '2026-09-05'
+method: searched
+source: >-
+  https://www.parentcenterhub.org/ and its full sitemap (1,835 URLs, fetched 2026-09-05). No
+  pricing, plans, subscription or commercial page exists anywhere on the site, and no such page is
+  linked from the homepage or footer.
+plan_count: 0
+model: free-public-good
+detail: >-
+  CPIR publishes no plans and charges nothing, and that is a deliberate posture rather than a gap.
+  It is a federally funded technical-assistance centre — an OSEP-funded project operated by the SPAN
+  Parent Advocacy Network — whose entire output, including the Parent Center directory that the
+  cn-api/v1 surface exposes, is public at no cost. There is no signup, no metering, no quota and no
+  commercial tier to record.
+access:
+  cost: free
+  signup_required: false
+  credential_required: false
+  note: >-
+    Every documented read endpoint answers anonymously. The only authenticated area on the site is
+    https://www.parentcenterhub.org/parentcenter-login (verified 200 on 2026-09-05), a staff-only
+    area for Parent Center personnel — it gates internal content, not API access, and issues no API
+    credential.
+evidence:
+  - url: https://www.parentcenterhub.org/
+    status: 200
+    note: No pricing link in navigation or footer.
+  - url: https://www.parentcenterhub.org/sitemap.xml
+    status: 200
+    note: 1,835 URLs, none matching a pricing or plans page.
+  - url: https://www.parentcenterhub.org/wp-json/cn-api/v1/entry
+    status: 200
+    note: Directory data returned with no credential of any kind.

@@ -1,0 +1,160 @@
+openapi: 3.2.0
+info:
+  title: CPIR Site Metadata API
+  version: wp/v2
+  description: >-
+    The anonymously readable metadata layer of the parentcenterhub.org WordPress REST API — the API
+    discovery root, the registered content types, the taxonomies and the publication statuses, plus
+    the Yoast SEO head document for any CPIR URL.
+
+    IMPORTANT COVERAGE NOTE: the WordPress content collections on this host (`/wp/v2/posts`,
+    `/pages`, `/media`, `/categories`, `/tags`, `/users`, `/search`) are NOT public. Every one of
+    them returns `401 rest_forbidden` to an anonymous caller, verified 2026-09-05 — the site runs a
+    security plugin that closes anonymous REST content reads. Only the metadata routes documented
+    here, and the `cn-api/v1` directory namespace documented separately, are readable without
+    credentials. CPIR's article content is instead available anonymously via its RSS feed.
+  contact:
+    name: Center for Parent Information and Resources
+    url: https://www.parentcenterhub.org/contact/
+  x-derived-from: https://www.parentcenterhub.org/wp-json/ route index plus live anonymous GET verification of every documented path on 2026-09-05
+  x-derived-on: '2026-09-05'
+  x-api-evangelist-note: Third-party profile. Only routes that returned a real anonymous 200 are documented as public; the gated collections are recorded in the description rather than presented as a surface.
+servers:
+  - url: https://www.parentcenterhub.org/wp-json
+    description: CPIR WordPress REST API (Parent Center Hub)
+tags:
+  - name: Discovery
+    description: The API root that enumerates every namespace and route on the host.
+  - name: Metadata
+    description: Registered content types, taxonomies and publication statuses.
+  - name: SEO
+    description: Yoast SEO head document for a CPIR URL.
+paths:
+  /:
+    get:
+      operationId: getApiRoot
+      summary: API discovery root
+      description: >-
+        Retrieve the WordPress REST API index for parentcenterhub.org — site name, description, URL,
+        timezone, the list of registered namespaces and the full route index with argument schemas
+        for every route. Verified live on 2026-09-05 at 34 namespaces and 717 routes.
+      tags: [Discovery]
+      parameters:
+        - name: context
+          in: query
+          description: Scope under which the request is made; determines fields present in response.
+          schema: { type: string, default: view }
+        - name: namespace
+          in: query
+          description: Limit the index to a single namespace.
+          schema: { type: string }
+      responses:
+        '200':
+          description: The API index document.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiRoot' }
+  /wp/v2/types:
+    get:
+      operationId: listContentTypes
+      summary: List registered content types
+      description: >-
+        Retrieve every registered post type with its labels, taxonomies, REST base and capabilities
+        flags. Verified live on 2026-09-05 returning 18 types.
+      tags: [Metadata]
+      parameters:
+        - name: context
+          in: query
+          description: Scope under which the request is made; determines fields present in response.
+          schema: { type: string, default: view }
+      responses:
+        '200':
+          description: Content types keyed by slug.
+          content:
+            application/json:
+              schema: { type: object, additionalProperties: { type: object } }
+  /wp/v2/taxonomies:
+    get:
+      operationId: listTaxonomies
+      summary: List registered taxonomies
+      description: >-
+        Retrieve every registered taxonomy with the content types it applies to, whether it is
+        hierarchical, and its REST base and namespace. Verified live on 2026-09-05.
+      tags: [Metadata]
+      parameters:
+        - name: context
+          in: query
+          description: Scope under which the request is made; determines fields present in response.
+          schema: { type: string, default: view }
+        - name: type
+          in: query
+          description: Limit results to taxonomies associated with a specific post type.
+          schema: { type: string }
+      responses:
+        '200':
+          description: Taxonomies keyed by slug.
+          content:
+            application/json:
+              schema: { type: object, additionalProperties: { type: object } }
+  /wp/v2/statuses:
+    get:
+      operationId: listPostStatuses
+      summary: List publication statuses
+      description: >-
+        Retrieve the publication statuses exposed to an anonymous caller. Verified live on
+        2026-09-05 returning only `publish`.
+      tags: [Metadata]
+      parameters:
+        - name: context
+          in: query
+          description: Scope under which the request is made; determines fields present in response.
+          schema: { type: string, default: view }
+      responses:
+        '200':
+          description: Statuses keyed by slug.
+          content:
+            application/json:
+              schema: { type: object, additionalProperties: { type: object } }
+  /yoast/v1/get_head:
+    get:
+      operationId: getSeoHead
+      summary: Retrieve the SEO head document for a URL
+      description: >-
+        Return the rendered Yoast SEO `<head>` block for a CPIR URL — title, canonical, robots
+        directives, Open Graph and schema.org JSON-LD. Verified live on 2026-09-05 against the site
+        home page. This is the only anonymously readable route that returns page-level structured
+        data for CPIR content.
+      tags: [SEO]
+      parameters:
+        - name: url
+          in: query
+          required: true
+          description: The CPIR URL to retrieve SEO metadata for.
+          schema: { type: string, format: uri }
+      responses:
+        '200':
+          description: The rendered SEO head document.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  html: { type: string, description: The rendered head markup, including schema.org JSON-LD. }
+        '404':
+          description: The URL is not a resource on this site.
+components:
+  schemas:
+    ApiRoot:
+      type: object
+      description: The WordPress REST API index document.
+      properties:
+        name: { type: string }
+        description: { type: string }
+        url: { type: string, format: uri }
+        home: { type: string, format: uri }
+        gmt_offset: { type: number }
+        timezone_string: { type: string }
+        namespaces: { type: array, items: { type: string } }
+        authentication: { type: object, description: 'Advertised authentication schemes. Empty on this host — no REST auth scheme is advertised to anonymous callers.' }
+        routes: { type: object, description: Every registered route with its argument schema. }
+        site_icon_url: { type: string, format: uri }

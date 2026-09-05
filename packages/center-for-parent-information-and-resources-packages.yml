@@ -1,0 +1,19 @@
+generated: '2026-09-05'
+method: searched
+source: >-
+  Searched for first-party client libraries on 2026-09-05. GitHub user search and repository search
+  for "parentcenterhub" both returned total_count 0 via api.github.com, so CPIR has no GitHub
+  organisation to hold one. No SDK, CLI, SourceCode or Postman link exists in apis.yml or on the
+  site, and no registry was queried for a named package because no package name is published to
+  query.
+package_count: 0
+packages: []
+detail: >-
+  CPIR ships no client libraries in any language, and does not present its wp-json surface as an API
+  at all, so there is nothing first-party to record. Consumers of the Parent Center directory would
+  reach it with a plain HTTP client, or with a generic WordPress REST client library — none of which
+  is published by CPIR and none of which is recorded here as theirs.
+registries_checked: [npm, PyPI, RubyGems, Packagist, crates.io, NuGet, Maven Central, pkg.go.dev]
+registry_note: >-
+  No registry lookup was performed against a specific package name because none is published. This
+  is a verified absence of a first-party SDK, not an unqueried registry.

@@ -1,0 +1,117 @@
+generated: '2026-09-05'
+method: derived
+source: >-
+  Derived from the four OpenAPI documents in openapi/ (themselves read from the published
+  https://www.parentcenterhub.org/wp-json/ route index) plus live anonymous HTTP responses and
+  response headers observed on 2026-09-05. CPIR publishes no developer documentation, so nothing
+  here is quoted from a docs page — every statement is an observation of the running API.
+docs: null
+note: >-
+  CPIR does not run a developer program. These conventions are those of the WordPress REST API as
+  deployed on parentcenterhub.org, observed directly. Where a convention is simply absent, that is
+  recorded as absent rather than filled in from generic WordPress behaviour.
+authentication:
+  style: none-for-reads
+  detail: >-
+    Every documented read route answers anonymously with no credential. The API index advertises an
+    empty `authentication` object — no REST authentication scheme is offered to third parties. Write
+    routes and the gated `wp/v2` content collections require a WordPress session cookie plus an
+    `X-WP-Nonce` header, which is a first-party browser mechanism, not an issuable API credential.
+    There is no key issuance, no OAuth, and no way for an outside integrator to obtain write access.
+  cross_reference: authentication/center-for-parent-information-and-resources-authentication.yml
+idempotency:
+  coverage: na
+  scope: []
+  detail: >-
+    No replay-protection mechanism is published and none is needed for the public surface: every
+    anonymously reachable operation is a GET. The collection endpoints answer `Allow: GET` without
+    credentials. The mutating routes that exist (entry create/update/delete, entry moderation,
+    account register/reset) are not reachable by an outside integrator at all, so there is no write
+    surface for an idempotency key to protect. Recorded as `na`, not `none`.
+pagination:
+  style: page-number
+  params:
+    - name: page
+      default: 1
+      description: Current page of the collection.
+    - name: per_page
+      default: 10
+      description: Maximum number of items to be returned in result set.
+    - name: offset
+      description: Offset the result set by a specific number of items.
+  response_fields: []
+  headers:
+    - X-WP-Total
+    - X-WP-TotalPages
+    - Link
+  detail: >-
+    Standard WordPress page-number pagination. The host advertises
+    `Access-Control-Expose-Headers: X-WP-Total, X-WP-TotalPages, Link`, but an observed 200 on
+    `/cn-api/v1/entry?per_page=1` did NOT actually carry `X-WP-Total` or `X-WP-TotalPages` — the
+    directory plugin exposes the header names without emitting the values. A consumer therefore
+    cannot read a total from the response and must page until an empty array is returned. Directory
+    size (784+ entries) was established that way on 2026-09-05.
+filtering:
+  detail: >-
+    The directory collection supports `search`, `include`, `exclude`, `offset`, and taxonomy
+    filtering via `categories`, `categories_exclude` and `tax_relation` (AND/OR). The
+    `/cn-api/v1/autocomplete/{type}` route additionally supports `order` (asc/desc) and `orderby`
+    across id, include, name, slug, term_group, description and count.
+field_expansion:
+  supported: true
+  detail: >-
+    A `context` parameter (`view`, `embed`, `edit`) selects the field set returned. `edit` requires
+    authentication. There is no sparse-fieldset or expand parameter.
+metadata:
+  supported: false
+  detail: No customer-supplied metadata field is exposed on any public resource.
+request_tracing:
+  supported: false
+  detail: No request-id or correlation header is returned on any observed response.
+versioning:
+  style: namespace-in-path
+  detail: >-
+    Versions are carried as a namespace segment in the path — `cn-api/v1`, `wp/v2`, `oembed/1.0`,
+    `yoast/v1`. The API index lists 34 namespaces on this host. There is no header-based or
+    date-based version selector, and no published policy governing namespace changes.
+  cross_reference: lifecycle/center-for-parent-information-and-resources-lifecycle.yml
+error_envelope:
+  format: wordpress-rest
+  media_type: application/json
+  shape: '{ "code": <slug>, "message": <string>, "data": { "status": <int> } }'
+  rfc9457: false
+  detail: >-
+    Errors are the WordPress REST envelope, not RFC 9457 — the media type is `application/json`,
+    there is no `type` URI, and the HTTP status is repeated inside `data.status`. Observed live.
+  cross_reference: errors/center-for-parent-information-and-resources-problem-types.yml
+rate_limit_signaling:
+  headers: []
+  detail: >-
+    No `X-RateLimit-*`, `RateLimit-*` or `Retry-After` header was observed on any response, and no
+    limit is documented. The only throttling signal the site publishes anywhere is a
+    `Crawl-delay: 600` directive in robots.txt, which is advisory guidance to crawlers and is not a
+    runtime API signal.
+  cross_reference: rate-limits/center-for-parent-information-and-resources-rate-limits.yml
+reversibility:
+  grade: na
+  detail: >-
+    The public surface is read-only, so there is nothing for an agent to take back. Every
+    anonymously reachable operation is a GET; no outside integrator can create, update or delete a
+    directory entry. Recorded as `na` rather than scored, per the read-only rule.
+  write_surfaces:
+    - surface: Directory entry create/update/delete
+      public: false
+      reversal_operation: moderateDirectoryEntry
+      reversal_detail: >-
+        The route index declares an `approve`/`unapprove` moderation pair on
+        `/cn-api/v1/entry/{id}/moderate`, which is a genuine inverse action on a submitted entry.
+        It requires an authenticated session and is not reachable by an outside integrator.
+      window: null
+      window_source: null
+      note: >-
+        Deletion has NO reversal path: the route index states `force` must be true "as resource does
+        not support trashing", meaning a deleted entry is not recoverable through the API. No window
+        is published for any of this, and none is asserted here.
+dry_run_mode:
+  supported: false
+  detail: No test mode, preview flag or simulation parameter is exposed on any route.

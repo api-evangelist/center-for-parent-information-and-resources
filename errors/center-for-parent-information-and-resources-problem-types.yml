@@ -1,0 +1,75 @@
+generated: '2026-09-05'
+method: probed
+source: >-
+  Live anonymous requests against https://www.parentcenterhub.org/wp-json/ on 2026-09-05. Every
+  error body recorded here was returned by the running API — CPIR publishes no error reference to
+  search, so nothing is enriched from documentation.
+format: wordpress-rest
+media_type: application/json
+rfc9457: false
+envelope:
+  shape: '{ "code": <slug>, "message": <string>, "data": { "status": <int> } }'
+  note: >-
+    Not RFC 9457. The response is served as `application/json`, carries no `type` URI and no
+    `title`/`detail` split, and repeats the HTTP status inside the body at `data.status`.
+problem_types:
+  - code: rest_forbidden
+    status: 401
+    title: Sorry, you are not allowed to do that.
+    observed_on:
+      - /wp-json/wp/v2/posts
+      - /wp-json/wp/v2/pages
+      - /wp-json/wp/v2/media
+      - /wp-json/wp/v2/categories
+      - /wp-json/wp/v2/tags
+      - /wp-json/wp/v2/users
+      - /wp-json/wp/v2/search
+      - /wp-json/cn-api/v1/settings
+      - /wp-json/wp-abilities/v1/abilities
+      - /wp-json/oembed/1.0/proxy
+    meaning: >-
+      The route requires an authenticated WordPress session. On this host it is also the response
+      for the entire `wp/v2` content-collection surface, which a security plugin has closed to
+      anonymous callers — so it signals a deliberate policy, not a transient failure.
+    remediation: >-
+      Not remediable by an outside integrator: CPIR issues no API credentials. Use the
+      `cn-api/v1` directory routes for machine-readable data, or the site RSS feed for articles.
+  - code: rest_cannot_view_themes
+    status: 401
+    title: Sorry, you are not allowed to view themes.
+    observed_on:
+      - /wp-json/wp/v2/themes
+    meaning: Capability-specific refusal for the theme route.
+    remediation: Not applicable to third-party integrators.
+  - code: rest_block_type_cannot_view
+    status: 401
+    title: Sorry, you are not allowed to manage block types.
+    observed_on:
+      - /wp-json/wp/v2/block-types
+    meaning: Capability-specific refusal for the block-type registry.
+    remediation: Not applicable to third-party integrators.
+  - code: wpcf7_forbidden
+    status: 403
+    title: You are not allowed to access contact forms.
+    observed_on:
+      - /wp-json/contact-form-7/v1/contact-forms
+    meaning: >-
+      Plugin-specific refusal from Contact Form 7. Note the status differs from the WordPress core
+      routes — 403 rather than 401 — for the same practical condition, so a consumer must treat both
+      as "not authorised" rather than distinguishing them.
+    remediation: Not applicable to third-party integrators.
+non_json_errors:
+  - status: 404
+    path: /.well-known/security.txt
+    body: bare nginx 404 HTML page (548 bytes)
+    note: Served by the edge before WordPress is reached.
+  - status: 404
+    path: any other unmatched site path
+    body: the WordPress theme's rendered 404 page (~119 KB of HTML)
+    note: >-
+      A consumer probing for a document must read the body, not just the status — but note that this
+      host returns an honest 404 status alongside the HTML, so it is not a soft-404 trap.
+  - status: 403
+    path: /xmlrpc.php
+    body: bare nginx 403 HTML page
+    note: WordPress XML-RPC is blocked at the edge.

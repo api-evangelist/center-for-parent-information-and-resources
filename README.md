@@ -88,11 +88,35 @@ The Center for Parent Information and Resources (CPIR) is a federally funded cen
 ## Timestamps
 
 - **Created:** 2024-12-03
-- **Modified:** 2026-04-23
+- **Modified:** 2026-09-05
 
 ## APIs
 
-No public developer API has been identified for CPIR. Content and updates are delivered through the Parent Center Hub website, the Buzz from the Hub newsletter, and an embedded events calendar. Contributions welcome if public APIs are identified.
+CPIR runs no developer program and publishes no API documentation or OpenAPI of its own. Its own host does,
+however, serve a real anonymous read-only JSON API: the WordPress REST API at
+`https://www.parentcenterhub.org/wp-json`, which registered 34 namespaces and 717 routes when profiled on
+2026-09-05. Four surfaces were documented from the route index the site itself publishes, each verified
+against live anonymous responses:
+
+- **CPIR Parent Center Directory API** — the machine-readable form of *Find Your Parent Center*. 784+ Parent
+  Centers (PTIs, CPRCs and regional PTACs) across 55 state and territory terms, each with organization name,
+  work address, geocoded latitude/longitude, phone, email and public link, in vCard/hCard field naming.
+- **CPIR Geography Reference API** — ISO 3166-1 country records, US state centroids and bounding boxes, and
+  country boundary geometry as GeoJSON (RFC 7946).
+- **CPIR oEmbed API** — a conformant oEmbed 1.0 provider endpoint for any CPIR page.
+- **CPIR Site Metadata API** — the discovery root, registered content types and taxonomies, and the Yoast SEO
+  head document carrying schema.org JSON-LD.
+
+No credential is required for any of these, and no third party can write to them — CPIR issues no API keys.
+
+**What is not readable:** the WordPress content collections on this host (`/wp/v2/posts`, `/pages`, `/media`,
+`/categories`, `/tags`, `/users`, `/search`) all return `401 rest_forbidden` to an anonymous caller. Article
+content is available through the site RSS feed instead. There is also no MCP server, no A2A agent card, no
+`/.well-known/` document of any kind, no SDK, CLI or GitHub organisation, and no pricing, status page,
+changelog or deprecation policy.
+
+The OpenAPI documents in `openapi/` were derived by API Evangelist from CPIR's own published route index
+(archived verbatim at `openapi/_original/`); CPIR did not author them.
 
 ## Common Properties
 

@@ -1,0 +1,48 @@
+generated: '2026-09-05'
+method: probed
+source: >-
+  Live probes of https://www.parentcenterhub.org on 2026-09-05, plus the published wp-json route
+  index. CPIR publishes no versioning policy, deprecation policy, SLA, status page or changelog —
+  each absence below was checked, not assumed.
+versioning:
+  scheme: namespace-in-path
+  current: cn-api/v1
+  detail: >-
+    API versions are namespace segments in the path (`cn-api/v1`, `wp/v2`, `oembed/1.0`,
+    `yoast/v1`). These are the version identifiers of the underlying WordPress core and plugins, not
+    a version CPIR governs or announces. 34 namespaces were registered on the host on 2026-09-05.
+  policy_url: null
+deprecation:
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  deprecated_operations: []
+  detail: >-
+    No deprecation policy is published and no operation in any of the four derived OpenAPI documents
+    is marked deprecated. No `Sunset` or `Deprecation` response header was observed. Because the
+    surface is a WordPress deployment, routes can appear or disappear with a plugin update without
+    any announcement — the directory namespace `cn-api/v1` exists only because the Connections
+    Business Directory plugin is installed and active.
+sla:
+  published: false
+  detail: No service-level agreement or uptime commitment is published.
+status_page:
+  published: false
+  url: null
+  detail: >-
+    No status page was found. The site is hosted on WP Engine, whose own status page covers the
+    platform rather than this deployment, and CPIR does not link to it.
+changelog:
+  published: false
+  url: null
+  detail: >-
+    No API changelog exists. The site publishes an editorial newsletter, "Buzz from the Hub"
+    (https://www.parentcenterhub.org/buzz-from-the-hub/, verified 200 on 2026-09-05), and an RSS
+    feed (https://www.parentcenterhub.org/feed/, verified 200), but neither reports API changes.
+stability:
+  assessment: undeclared
+  detail: >-
+    CPIR makes no stability commitment about this surface because it does not present it as an API
+    at all. An integrator should treat the directory endpoints as usable but unannounced, and should
+    monitor for change rather than expect notice.

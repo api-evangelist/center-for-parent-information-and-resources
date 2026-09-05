@@ -1,0 +1,129 @@
+generated: '2026-09-05'
+method: probed
+source: >-
+  Derived from the four OpenAPI documents in openapi/ and verified against live anonymous responses
+  from https://www.parentcenterhub.org/wp-json/ on 2026-09-05. CPIR publishes no compliance page or
+  conformance statement, so every entry below is read from the contract or the wire, never from a
+  marketing claim.
+note: >-
+  CPIR does not present this surface as an API and makes no conformance claims about it. The
+  standards recorded as `conforms: true` are ones the running contract itself declares — by field
+  name, by response shape, or by implementing a named specification's endpoint.
+conformance:
+  - id: oembed-1.0
+    label: oEmbed 1.0
+    conforms: true
+    evidence: >-
+      https://www.parentcenterhub.org/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.parentcenterhub.org%2F
+      returned 200 on 2026-09-05 with a conformant oEmbed 1.0 document — "version":"1.0",
+      "provider_name":"Center for Parent Information and Resources",
+      "provider_url":"https://www.parentcenterhub.org", plus title and embeddable html. CPIR is a
+      registered oEmbed provider for its own content.
+    spec: https://oembed.com/
+  - id: vcard-hcard
+    label: vCard / hCard contact vocabulary
+    conforms: true
+    domain_standard: true
+    evidence: >-
+      The directory entry contract declares the vCard/hCard property vocabulary directly in its own
+      field names, read from the published route index at
+      https://www.parentcenterhub.org/wp-json/ (`/cn-api/v1/entry` argument schema) and confirmed in
+      the live 200 body of /wp-json/cn-api/v1/entry/35 — `fn`, `org`, `adr`, `tel`, `email`,
+      `honorific_prefix`, `honorific_suffix`, `given_name`, `additional_name`, `family_name`,
+      `job_title`, `bio`, and within `adr` the `street_address`, `extended_address`, `locality`,
+      `region`, `postal_code`, `country_name` set. This is the contact-directory domain standard for
+      this market: a consumer that already speaks vCard/hCard maps these records with no bespoke
+      connector.
+    spec: https://datatracker.ietf.org/doc/html/rfc6350
+  - id: geojson-rfc7946
+    label: GeoJSON (RFC 7946)
+    conforms: true
+    evidence: >-
+      https://www.parentcenterhub.org/wp-json/cn-api/v1/countries/us/geojson returned 200 on
+      2026-09-05 with a 493 KB body whose root is
+      {"type":"FeatureCollection","features":[{"type":"Feature","properties":{"cca2":"us"},
+      "geometry":{"type":"MultiPolygon", ...}}]}.
+    spec: https://datatracker.ietf.org/doc/html/rfc7946
+  - id: iso-3166-1
+    label: ISO 3166-1 country codes
+    conforms: true
+    evidence: >-
+      https://www.parentcenterhub.org/wp-json/cn-api/v1/countries returned 200 on 2026-09-05 with
+      records carrying explicitly named `iso_3166_1_alpha2` and `iso_3166_1_alpha3` fields
+      (US/USA, FR/FRA, JP/JPN). The single-country route is keyed on a lowercase alpha-2 path
+      parameter constrained by the route index to `[a-z]{2}`.
+    spec: https://www.iso.org/iso-3166-country-codes.html
+  - id: iso-4217
+    label: ISO 4217 currency codes
+    conforms: true
+    evidence: >-
+      The same country records carry a `currency` field holding ISO 4217 alphabetic codes — USD,
+      EUR, JPY — observed live on 2026-09-05.
+    spec: https://www.iso.org/iso-4217-currency-codes.html
+  - id: schema-org-jsonld
+    label: schema.org structured data (JSON-LD)
+    conforms: true
+    evidence: >-
+      https://www.parentcenterhub.org/wp-json/yoast/v1/get_head?url=https://www.parentcenterhub.org/
+      returned 200 on 2026-09-05 carrying an application/ld+json block with
+      "@context":"https://schema.org" and an @graph of WebPage, BreadcrumbList and WebSite nodes.
+    spec: https://schema.org/
+  - id: rss-2.0
+    label: RSS 2.0
+    conforms: true
+    evidence: >-
+      https://www.parentcenterhub.org/feed/ returned 200 on 2026-09-05 serving the site's article
+      feed. This is the only anonymously readable machine surface for CPIR's article content, since
+      the wp/v2 content collections are closed.
+    spec: https://www.rssboard.org/rss-specification
+  - id: wordpress-rest-discovery
+    label: WordPress REST API discovery (api.w.org link relation)
+    conforms: true
+    evidence: >-
+      Responses carry `Link: <https://www.parentcenterhub.org/wp-json/>; rel="https://api.w.org/"`,
+      observed on the /wp-json/cn-api/v1/entry response headers on 2026-09-05, and the index at
+      /wp-json/ enumerates all 34 namespaces and 717 routes.
+    spec: https://developer.wordpress.org/rest-api/
+  - id: rfc9457
+    label: RFC 9457 Problem Details
+    conforms: false
+    evidence: >-
+      Errors are the WordPress envelope `{"code","message","data":{"status"}}` served as
+      application/json — no `type` URI, no problem+json media type. Observed live on 2026-09-05 via
+      the 401 from /wp-json/wp/v2/posts.
+    spec: https://datatracker.ietf.org/doc/html/rfc9457
+  - id: oauth2
+    label: OAuth 2.0
+    conforms: false
+    evidence: >-
+      No OAuth surface. /.well-known/oauth-authorization-server and
+      /.well-known/openid-configuration both returned 404 on www.parentcenterhub.org and
+      parentcenterhub.org on 2026-09-05, and the API index advertises an empty `authentication`
+      object.
+  - id: idempotency
+    label: Idempotency-Key
+    conforms: false
+    evidence: >-
+      Not applicable in practice — the public surface is read-only (`Allow: GET` on the directory
+      collection) and no idempotency mechanism is published. See conventions/, where this is
+      recorded as `na` rather than a failing.
+domain_standard_review:
+  regime: education
+  shortlist_checked: [scim, lti, oneroster, ed-fi, caliper, qti, oai-pmh, shibboleth, saml, orcid, datacite, crossref]
+  found: []
+  detail: >-
+    The Kin Score `education` regulatory regime shortlist was checked against the contract on
+    2026-09-05 and none of those standards appear. That is the correct result rather than a gap:
+    CPIR is a federally funded information and referral hub, not a student-records, courseware,
+    identity-federation or scholarly-repository system, so the standards that regime shortlists have
+    no surface here to attach to. The domain standard this contract DOES declare is vCard/hCard, the
+    contact-directory vocabulary, recorded above.
+compliance_programs:
+  published: false
+  detail: >-
+    No trust center, SOC 2, ISO 27001, FedRAMP or other certification page was found; the
+    probe-security-programs pass returned vdp=none trust=none on 2026-09-05. As a federally funded
+    OSEP project the site is subject to Section 508 accessibility obligations, and it does run
+    accessibility tooling — a Recite.me widget is linked from the homepage and an `a11yfy/v1`
+    namespace is registered on the REST API — but CPIR publishes no accessibility conformance
+    statement, so no conformance is asserted here on that basis.
