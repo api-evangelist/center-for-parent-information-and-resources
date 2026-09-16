@@ -67,124 +67,306 @@ description: >-
   are closed to anonymous callers and return 401 rest_forbidden; article content is available through
   the site RSS feed.
 apis:
-  - aid: center-for-parent-information-and-resources:cpir-parent-center-directory-api
-    name: CPIR Parent Center Directory API
-    description: >-
-      Public, unauthenticated read access to the national Parent Center directory - the machine-readable
-      form of the Find Your Parent Center finder. Each entry is a Parent Training and Information Center
-      (PTI), Community Parent Resource Center (CPRC) or regional Parent Technical Assistance Center, carrying
-      organization name, work address, geocoded latitude and longitude, telephone numbers, email addresses
-      and a public link, in vCard/hCard field naming. Verified live on 2026-09-05 at 784+ published entries
-      across 55 state and territory categories. Anonymous access is read-only; the collection answers
-      Allow GET without credentials, and CPIR issues no API keys.
-    humanURL: https://www.parentcenterhub.org/find-your-center/
-    baseURL: https://www.parentcenterhub.org/wp-json
-    tags:
-      - Directory
-      - Disability
-      - Education
-      - Families
-      - Parent Centers
-      - Geolocation
-    properties:
-      - type: OpenAPI
-        url: 
-          openapi/center-for-parent-information-and-resources-parent-center-directory-api-openapi.yml
-      - type: Overlay
-        url: 
-          overlays/center-for-parent-information-and-resources-parent-center-directory-api-overlay.yaml
-      - type: Authentication
-        url: authentication/center-for-parent-information-and-resources-authentication.yml
-      - type: Conventions
-        url: conventions/center-for-parent-information-and-resources-conventions.yml
-      - type: ErrorCatalog
-        url: errors/center-for-parent-information-and-resources-problem-types.yml
-      - type: Lifecycle
-        url: lifecycle/center-for-parent-information-and-resources-lifecycle.yml
-      - type: DataModel
-        url: data-model/center-for-parent-information-and-resources-data-model.yml
-      - type: RateLimits
-        url: rate-limits/center-for-parent-information-and-resources-rate-limits.yml
-      - type: Conformance
-        url: conformance/center-for-parent-information-and-resources-conformance.yml
-      - type: AgentSkill
-        url: skills/_index.yml
-      - type: X-MCPServerCandidate
-        url: mcp/center-for-parent-information-and-resources-mcp.yml
-  - aid: center-for-parent-information-and-resources:cpir-geography-reference-api
-    name: CPIR Geography Reference API
-    description: >-
-      Public, unauthenticated reference data served alongside the Parent Center directory: ISO 3166-1
-      country records with alpha-2 and alpha-3 codes, ISO 4217 currency and calling codes; administrative
-      subdivisions with centroids and bounding boxes (US states and territories); and country boundary
-      geometry as GeoJSON (RFC 7946). This is the geography layer the Find Your Parent Center map is built
-      on. Verified live on 2026-09-05.
-    humanURL: https://www.parentcenterhub.org/find-your-center/
-    baseURL: https://www.parentcenterhub.org/wp-json
-    tags:
-      - Geolocation
-      - Reference Data
-      - GeoJSON
-      - Countries
-    properties:
-      - type: OpenAPI
-        url: openapi/center-for-parent-information-and-resources-geography-reference-api-openapi.yml
-      - type: Overlay
-        url: 
-          overlays/center-for-parent-information-and-resources-geography-reference-api-overlay.yaml
-      - type: Conformance
-        url: conformance/center-for-parent-information-and-resources-conformance.yml
-      - type: DataModel
-        url: data-model/center-for-parent-information-and-resources-data-model.yml
-      - type: Conventions
-        url: conventions/center-for-parent-information-and-resources-conventions.yml
-  - aid: center-for-parent-information-and-resources:cpir-oembed-api
-    name: CPIR oEmbed API
-    description: >-
-      Public, unauthenticated oEmbed 1.0 provider endpoint for parentcenterhub.org. Given the URL of any
-      CPIR page it returns a conformant oEmbed document naming the provider, title, author and embeddable
-      HTML - the standards-based way for another site or an agent to cite or embed CPIR content. Verified
-      live on 2026-09-05 returning provider_name 'Center for Parent Information and Resources'.
-    humanURL: https://www.parentcenterhub.org/the-cpir-resource-center/
-    baseURL: https://www.parentcenterhub.org/wp-json
-    tags:
-      - oEmbed
-      - Content
-      - Embedding
-    properties:
-      - type: OpenAPI
-        url: openapi/center-for-parent-information-and-resources-oembed-api-openapi.yml
-      - type: Overlay
-        url: overlays/center-for-parent-information-and-resources-oembed-api-overlay.yaml
-      - type: Conformance
-        url: conformance/center-for-parent-information-and-resources-conformance.yml
-  - aid: center-for-parent-information-and-resources:cpir-site-metadata-api
-    name: CPIR Site Metadata API
-    description: >-
-      The anonymously readable metadata layer of the parentcenterhub.org WordPress REST API - the discovery
-      root enumerating 34 namespaces and 717 routes with their argument schemas, the registered content
-      types, taxonomies and publication statuses, and the Yoast SEO head document carrying schema.org
-      JSON-LD for any CPIR URL. Note that the WordPress content collections on this host (posts, pages,
-      media, categories, tags, users, search) are NOT public: every one returns 401 rest_forbidden to
-      an anonymous caller, verified 2026-09-05. Article content is available through the site RSS feed
-      instead.
-    humanURL: https://www.parentcenterhub.org/
-    baseURL: https://www.parentcenterhub.org/wp-json
-    tags:
-      - Metadata
-      - Discovery
-      - SEO
-      - Structured Data
-    properties:
-      - type: OpenAPI
-        url: openapi/center-for-parent-information-and-resources-site-metadata-api-openapi.yml
-      - type: Overlay
-        url: overlays/center-for-parent-information-and-resources-site-metadata-api-overlay.yaml
-      - type: Conformance
-        url: conformance/center-for-parent-information-and-resources-conformance.yml
-      - type: ErrorCatalog
-        url: errors/center-for-parent-information-and-resources-problem-types.yml
+- aid: center-for-parent-information-and-resources:cpir-oembed-api
+  name: CPIR oEmbed API
+  description: >-
+    Public, unauthenticated oEmbed 1.0 provider endpoint for parentcenterhub.org. Given the URL of any
+    CPIR page it returns a conformant oEmbed document naming the provider, title, author and embeddable
+    HTML - the standards-based way for another site or an agent to cite or embed CPIR content. Verified
+    live on 2026-09-05 returning provider_name 'Center for Parent Information and Resources'.
+  humanURL: https://www.parentcenterhub.org/the-cpir-resource-center/
+  baseURL: https://www.parentcenterhub.org/wp-json
+  tags:
+  - oEmbed
+  - Content
+  - Embedding
+  properties:
+  - type: OpenAPI
+    url: openapi/center-for-parent-information-and-resources-oembed-api-openapi.yml
+  - type: Overlay
+    url: overlays/center-for-parent-information-and-resources-oembed-api-overlay.yaml
+  - type: Conformance
+    url: conformance/center-for-parent-information-and-resources-conformance.yml
+- aid: >-
+    center-for-parent-information-and-resources:center-for-parent-information-and-resources-account-api
+  name: Center for Parent Information and Resources Account API
+  description: >-
+    Visitor account routes exposed by the directory plugin. Gated behind a request nonce; not invoked
+    during profiling.
+  humanURL: https://www.parentcenterhub.org/find-your-center/
+  baseURL: https://www.parentcenterhub.org/wp-json
+  tags:
+  - Account
+  properties:
+  - type: OpenAPI
+    url: openapi/center-for-parent-information-and-resources-account-api-openapi.yml
+  - type: Authentication
+    url: authentication/center-for-parent-information-and-resources-authentication.yml
+  - type: Conventions
+    url: conventions/center-for-parent-information-and-resources-conventions.yml
+  - type: ErrorCatalog
+    url: errors/center-for-parent-information-and-resources-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/center-for-parent-information-and-resources-lifecycle.yml
+  - type: DataModel
+    url: data-model/center-for-parent-information-and-resources-data-model.yml
+  - type: RateLimits
+    url: rate-limits/center-for-parent-information-and-resources-rate-limits.yml
+  - type: Conformance
+    url: conformance/center-for-parent-information-and-resources-conformance.yml
+  - type: X-MCPServerCandidate
+    url: mcp/center-for-parent-information-and-resources-mcp.yml
+- aid: >-
+    center-for-parent-information-and-resources:center-for-parent-information-and-resources-autocomplete-api
+  name: Center for Parent Information and Resources Autocomplete API
+  description: Type-ahead lookup over directory fields, backing the finder's search form.
+  humanURL: https://www.parentcenterhub.org/find-your-center/
+  baseURL: https://www.parentcenterhub.org/wp-json
+  tags:
+  - Autocomplete
+  properties:
+  - type: OpenAPI
+    url: openapi/center-for-parent-information-and-resources-autocomplete-api-openapi.yml
+  - type: Authentication
+    url: authentication/center-for-parent-information-and-resources-authentication.yml
+  - type: Conventions
+    url: conventions/center-for-parent-information-and-resources-conventions.yml
+  - type: ErrorCatalog
+    url: errors/center-for-parent-information-and-resources-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/center-for-parent-information-and-resources-lifecycle.yml
+  - type: DataModel
+    url: data-model/center-for-parent-information-and-resources-data-model.yml
+  - type: RateLimits
+    url: rate-limits/center-for-parent-information-and-resources-rate-limits.yml
+  - type: Conformance
+    url: conformance/center-for-parent-information-and-resources-conformance.yml
+  - type: X-MCPServerCandidate
+    url: mcp/center-for-parent-information-and-resources-mcp.yml
+- aid: >-
+    center-for-parent-information-and-resources:center-for-parent-information-and-resources-categories-api
+  name: Center for Parent Information and Resources Categories API
+  description: The state and territory taxonomy the directory is organised by.
+  humanURL: https://www.parentcenterhub.org/find-your-center/
+  baseURL: https://www.parentcenterhub.org/wp-json
+  tags:
+  - Categories
+  properties:
+  - type: OpenAPI
+    url: openapi/center-for-parent-information-and-resources-categories-api-openapi.yml
+  - type: Authentication
+    url: authentication/center-for-parent-information-and-resources-authentication.yml
+  - type: Conventions
+    url: conventions/center-for-parent-information-and-resources-conventions.yml
+  - type: ErrorCatalog
+    url: errors/center-for-parent-information-and-resources-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/center-for-parent-information-and-resources-lifecycle.yml
+  - type: DataModel
+    url: data-model/center-for-parent-information-and-resources-data-model.yml
+  - type: RateLimits
+    url: rate-limits/center-for-parent-information-and-resources-rate-limits.yml
+  - type: Conformance
+    url: conformance/center-for-parent-information-and-resources-conformance.yml
+  - type: X-MCPServerCandidate
+    url: mcp/center-for-parent-information-and-resources-mcp.yml
+- aid: >-
+    center-for-parent-information-and-resources:center-for-parent-information-and-resources-countries-api
+  name: Center for Parent Information and Resources Countries API
+  description: ISO 3166-1 country reference records.
+  humanURL: https://www.parentcenterhub.org/find-your-center/
+  baseURL: https://www.parentcenterhub.org/wp-json
+  tags:
+  - Countries
+  properties:
+  - type: OpenAPI
+    url: openapi/center-for-parent-information-and-resources-countries-api-openapi.yml
+  - type: Authentication
+    url: authentication/center-for-parent-information-and-resources-authentication.yml
+  - type: Conventions
+    url: conventions/center-for-parent-information-and-resources-conventions.yml
+  - type: ErrorCatalog
+    url: errors/center-for-parent-information-and-resources-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/center-for-parent-information-and-resources-lifecycle.yml
+  - type: DataModel
+    url: data-model/center-for-parent-information-and-resources-data-model.yml
+  - type: RateLimits
+    url: rate-limits/center-for-parent-information-and-resources-rate-limits.yml
+  - type: Conformance
+    url: conformance/center-for-parent-information-and-resources-conformance.yml
+  - type: X-MCPServerCandidate
+    url: mcp/center-for-parent-information-and-resources-mcp.yml
+- aid: >-
+    center-for-parent-information-and-resources:center-for-parent-information-and-resources-discovery-api
+  name: Center for Parent Information and Resources Discovery API
+  description: The API root that enumerates every namespace and route on the host.
+  humanURL: https://www.parentcenterhub.org/find-your-center/
+  baseURL: https://www.parentcenterhub.org/wp-json
+  tags:
+  - Discovery
+  properties:
+  - type: OpenAPI
+    url: openapi/center-for-parent-information-and-resources-discovery-api-openapi.yml
+  - type: Authentication
+    url: authentication/center-for-parent-information-and-resources-authentication.yml
+  - type: Conventions
+    url: conventions/center-for-parent-information-and-resources-conventions.yml
+  - type: ErrorCatalog
+    url: errors/center-for-parent-information-and-resources-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/center-for-parent-information-and-resources-lifecycle.yml
+  - type: DataModel
+    url: data-model/center-for-parent-information-and-resources-data-model.yml
+  - type: RateLimits
+    url: rate-limits/center-for-parent-information-and-resources-rate-limits.yml
+  - type: Conformance
+    url: conformance/center-for-parent-information-and-resources-conformance.yml
+  - type: X-MCPServerCandidate
+    url: mcp/center-for-parent-information-and-resources-mcp.yml
+- aid: >-
+    center-for-parent-information-and-resources:center-for-parent-information-and-resources-entries-api
+  name: Center for Parent Information and Resources Entries API
+  description: >-
+    Parent Center directory records — PTIs, CPRCs and regional Parent Technical Assistance Centers.
+  humanURL: https://www.parentcenterhub.org/find-your-center/
+  baseURL: https://www.parentcenterhub.org/wp-json
+  tags:
+  - Entries
+  properties:
+  - type: OpenAPI
+    url: openapi/center-for-parent-information-and-resources-entries-api-openapi.yml
+  - type: Authentication
+    url: authentication/center-for-parent-information-and-resources-authentication.yml
+  - type: Conventions
+    url: conventions/center-for-parent-information-and-resources-conventions.yml
+  - type: ErrorCatalog
+    url: errors/center-for-parent-information-and-resources-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/center-for-parent-information-and-resources-lifecycle.yml
+  - type: DataModel
+    url: data-model/center-for-parent-information-and-resources-data-model.yml
+  - type: RateLimits
+    url: rate-limits/center-for-parent-information-and-resources-rate-limits.yml
+  - type: Conformance
+    url: conformance/center-for-parent-information-and-resources-conformance.yml
+  - type: X-MCPServerCandidate
+    url: mcp/center-for-parent-information-and-resources-mcp.yml
+- aid: >-
+    center-for-parent-information-and-resources:center-for-parent-information-and-resources-geometry-api
+  name: Center for Parent Information and Resources Geometry API
+  description: Country boundary geometry as GeoJSON.
+  humanURL: https://www.parentcenterhub.org/find-your-center/
+  baseURL: https://www.parentcenterhub.org/wp-json
+  tags:
+  - Geometry
+  properties:
+  - type: OpenAPI
+    url: openapi/center-for-parent-information-and-resources-geometry-api-openapi.yml
+  - type: Authentication
+    url: authentication/center-for-parent-information-and-resources-authentication.yml
+  - type: Conventions
+    url: conventions/center-for-parent-information-and-resources-conventions.yml
+  - type: ErrorCatalog
+    url: errors/center-for-parent-information-and-resources-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/center-for-parent-information-and-resources-lifecycle.yml
+  - type: DataModel
+    url: data-model/center-for-parent-information-and-resources-data-model.yml
+  - type: RateLimits
+    url: rate-limits/center-for-parent-information-and-resources-rate-limits.yml
+  - type: Conformance
+    url: conformance/center-for-parent-information-and-resources-conformance.yml
+  - type: X-MCPServerCandidate
+    url: mcp/center-for-parent-information-and-resources-mcp.yml
+- aid: >-
+    center-for-parent-information-and-resources:center-for-parent-information-and-resources-metadata-api
+  name: Center for Parent Information and Resources Metadata API
+  description: Registered content types, taxonomies and publication statuses.
+  humanURL: https://www.parentcenterhub.org/find-your-center/
+  baseURL: https://www.parentcenterhub.org/wp-json
+  tags:
+  - Metadata
+  properties:
+  - type: OpenAPI
+    url: openapi/center-for-parent-information-and-resources-metadata-api-openapi.yml
+  - type: Authentication
+    url: authentication/center-for-parent-information-and-resources-authentication.yml
+  - type: Conventions
+    url: conventions/center-for-parent-information-and-resources-conventions.yml
+  - type: ErrorCatalog
+    url: errors/center-for-parent-information-and-resources-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/center-for-parent-information-and-resources-lifecycle.yml
+  - type: DataModel
+    url: data-model/center-for-parent-information-and-resources-data-model.yml
+  - type: RateLimits
+    url: rate-limits/center-for-parent-information-and-resources-rate-limits.yml
+  - type: Conformance
+    url: conformance/center-for-parent-information-and-resources-conformance.yml
+  - type: X-MCPServerCandidate
+    url: mcp/center-for-parent-information-and-resources-mcp.yml
+- aid: >-
+    center-for-parent-information-and-resources:center-for-parent-information-and-resources-regions-api
+  name: Center for Parent Information and Resources Regions API
+  description: Administrative subdivisions of a country, with centroid and bounding box.
+  humanURL: https://www.parentcenterhub.org/find-your-center/
+  baseURL: https://www.parentcenterhub.org/wp-json
+  tags:
+  - Regions
+  properties:
+  - type: OpenAPI
+    url: openapi/center-for-parent-information-and-resources-regions-api-openapi.yml
+  - type: Authentication
+    url: authentication/center-for-parent-information-and-resources-authentication.yml
+  - type: Conventions
+    url: conventions/center-for-parent-information-and-resources-conventions.yml
+  - type: ErrorCatalog
+    url: errors/center-for-parent-information-and-resources-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/center-for-parent-information-and-resources-lifecycle.yml
+  - type: DataModel
+    url: data-model/center-for-parent-information-and-resources-data-model.yml
+  - type: RateLimits
+    url: rate-limits/center-for-parent-information-and-resources-rate-limits.yml
+  - type: Conformance
+    url: conformance/center-for-parent-information-and-resources-conformance.yml
+  - type: X-MCPServerCandidate
+    url: mcp/center-for-parent-information-and-resources-mcp.yml
+- aid: >-
+    center-for-parent-information-and-resources:center-for-parent-information-and-resources-seo-api
+  name: Center for Parent Information and Resources SEO API
+  description: Yoast SEO head document for a CPIR URL.
+  humanURL: https://www.parentcenterhub.org/find-your-center/
+  baseURL: https://www.parentcenterhub.org/wp-json
+  tags:
+  - SEO
+  properties:
+  - type: OpenAPI
+    url: openapi/center-for-parent-information-and-resources-seo-api-openapi.yml
+  - type: Authentication
+    url: authentication/center-for-parent-information-and-resources-authentication.yml
+  - type: Conventions
+    url: conventions/center-for-parent-information-and-resources-conventions.yml
+  - type: ErrorCatalog
+    url: errors/center-for-parent-information-and-resources-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/center-for-parent-information-and-resources-lifecycle.yml
+  - type: DataModel
+    url: data-model/center-for-parent-information-and-resources-data-model.yml
+  - type: RateLimits
+    url: rate-limits/center-for-parent-information-and-resources-rate-limits.yml
+  - type: Conformance
+    url: conformance/center-for-parent-information-and-resources-conformance.yml
+  - type: X-MCPServerCandidate
+    url: mcp/center-for-parent-information-and-resources-mcp.yml
 common:
+  - type: Overlay
+    url: overlays/center-for-parent-information-and-resources-parent-center-directory-api-overlay.yaml
+  - type: Overlay
+    url: overlays/center-for-parent-information-and-resources-geography-reference-api-overlay.yaml
+  - type: Overlay
+    url: overlays/center-for-parent-information-and-resources-site-metadata-api-overlay.yaml
   - type: DomainSecurity
     url: security/center-for-parent-information-and-resources-domain-security.yml
   - type: Website
