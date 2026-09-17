@@ -67,26 +67,6 @@ description: >-
   are closed to anonymous callers and return 401 rest_forbidden; article content is available through
   the site RSS feed.
 apis:
-- aid: center-for-parent-information-and-resources:cpir-oembed-api
-  name: CPIR oEmbed API
-  description: >-
-    Public, unauthenticated oEmbed 1.0 provider endpoint for parentcenterhub.org. Given the URL of any
-    CPIR page it returns a conformant oEmbed document naming the provider, title, author and embeddable
-    HTML - the standards-based way for another site or an agent to cite or embed CPIR content. Verified
-    live on 2026-09-05 returning provider_name 'Center for Parent Information and Resources'.
-  humanURL: https://www.parentcenterhub.org/the-cpir-resource-center/
-  baseURL: https://www.parentcenterhub.org/wp-json
-  tags:
-  - oEmbed
-  - Content
-  - Embedding
-  properties:
-  - type: OpenAPI
-    url: openapi/center-for-parent-information-and-resources-oembed-api-openapi.yml
-  - type: Overlay
-    url: overlays/center-for-parent-information-and-resources-oembed-api-overlay.yaml
-  - type: Conformance
-    url: conformance/center-for-parent-information-and-resources-conformance.yml
 - aid: >-
     center-for-parent-information-and-resources:center-for-parent-information-and-resources-account-api
   name: Center for Parent Information and Resources Account API
@@ -360,7 +340,22 @@ apis:
     url: conformance/center-for-parent-information-and-resources-conformance.yml
   - type: X-MCPServerCandidate
     url: mcp/center-for-parent-information-and-resources-mcp.yml
+- aid: >-
+    center-for-parent-information-and-resources:center-for-parent-information-and-resources-o-embed-api
+  name: Center for Parent Information and Resources o Embed API
+  description: oEmbed 1.0 provider endpoints.
+  humanURL: https://www.parentcenterhub.org/the-cpir-resource-center/
+  baseURL: https://www.parentcenterhub.org/wp-json
+  tags:
+  - o Embed
+  properties:
+  - type: OpenAPI
+    url: openapi/center-for-parent-information-and-resources-o-embed-api-openapi.yml
+  - type: Conformance
+    url: conformance/center-for-parent-information-and-resources-conformance.yml
 common:
+  - type: Overlay
+    url: overlays/center-for-parent-information-and-resources-oembed-api-overlay.yaml
   - type: Overlay
     url: overlays/center-for-parent-information-and-resources-parent-center-directory-api-overlay.yaml
   - type: Overlay
