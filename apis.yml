@@ -347,6 +347,8 @@ apis:
   humanURL: https://www.parentcenterhub.org/the-cpir-resource-center/
   baseURL: https://www.parentcenterhub.org/wp-json
   tags:
+  - oEmbed
+  tags_raw:
   - o Embed
   properties:
   - type: OpenAPI
