@@ -1,0 +1,120 @@
+openapi: 3.2.0
+info:
+  title: CPIR Geography Reference Regions API
+  version: cn-api/v1
+  description: 'Public, unauthenticated reference data served alongside the CPIR Parent Center directory: ISO 3166-1 country records, their administrative subdivisions (US states and territories with bounding boxes and centroids), and country boundary geometry as GeoJSON. This is the geography layer the "Find Your Parent Center" map is built on. Verified live on 2026-09-05.'
+  contact:
+    name: Center for Parent Information and Resources
+    url: https://www.parentcenterhub.org/contact/
+  x-derived-from: https://www.parentcenterhub.org/wp-json/ route index (`cn-api/v1` namespace) plus live anonymous GET verification of /countries, /countries/us, /countries/us/regions, /countries/us/region/IA and /countries/us/geojson
+  x-derived-on: '2026-09-05'
+  x-api-evangelist-note: Third-party profile. Paths, parameters and enums are read from the server's own published route index; response shapes from live 200 responses on 2026-09-05. Nothing here is invented.
+servers:
+- url: https://www.parentcenterhub.org/wp-json
+  description: CPIR WordPress REST API (Parent Center Hub)
+tags:
+- name: Regions
+  description: Administrative subdivisions of a country, with centroid and bounding box.
+paths:
+  /cn-api/v1/countries/{code}/regions:
+    get:
+      operationId: listCountryRegions
+      summary: List a country's regions
+      description: Retrieve the administrative subdivisions of a country, keyed by subdivision code. Verified live on 2026-09-05 for `us`, returning states, territories and armed-forces codes with a centroid and a bounding box each.
+      tags:
+      - Regions
+      parameters:
+      - name: code
+        in: path
+        required: true
+        description: Lowercase ISO 3166-1 alpha-2 country code.
+        schema:
+          type: string
+          pattern: ^[a-z]{2}$
+      responses:
+        '200':
+          description: Region records keyed by subdivision code.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/Region'
+  /cn-api/v1/countries/{code}/region/{region}:
+    get:
+      operationId: getCountryRegion
+      summary: Retrieve one region
+      description: Retrieve a single administrative subdivision by its code, with centroid and bounding box.
+      tags:
+      - Regions
+      parameters:
+      - name: code
+        in: path
+        required: true
+        description: Lowercase ISO 3166-1 alpha-2 country code.
+        schema:
+          type: string
+          pattern: ^[a-z]{2}$
+      - name: region
+        in: path
+        required: true
+        description: Subdivision code, e.g. `IA`.
+        schema:
+          type: string
+          pattern: ^[0-9a-zA-Z]+$
+      responses:
+        '200':
+          description: A single region record.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Region'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  responses:
+    NotFound:
+      description: No resource matched the requested identifier.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      description: The WordPress REST error envelope, observed live on this host.
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            status:
+              type: integer
+    Region:
+      type: object
+      description: An administrative subdivision with a centroid and a bounding box.
+      properties:
+        name:
+          type: string
+        alt_names:
+          type: array
+          items:
+            type: string
+        geo:
+          type: object
+          properties:
+            latitude:
+              type: number
+            longitude:
+              type: number
+            min_latitude:
+              type: number
+            min_longitude:
+              type: number
+            max_latitude:
+              type: number
+            max_longitude:
+              type: number

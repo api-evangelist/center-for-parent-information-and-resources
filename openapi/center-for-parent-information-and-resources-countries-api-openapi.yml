@@ -1,0 +1,138 @@
+openapi: 3.2.0
+info:
+  title: CPIR Geography Reference Countries API
+  version: cn-api/v1
+  description: 'Public, unauthenticated reference data served alongside the CPIR Parent Center directory: ISO 3166-1 country records, their administrative subdivisions (US states and territories with bounding boxes and centroids), and country boundary geometry as GeoJSON. This is the geography layer the "Find Your Parent Center" map is built on. Verified live on 2026-09-05.'
+  contact:
+    name: Center for Parent Information and Resources
+    url: https://www.parentcenterhub.org/contact/
+  x-derived-from: https://www.parentcenterhub.org/wp-json/ route index (`cn-api/v1` namespace) plus live anonymous GET verification of /countries, /countries/us, /countries/us/regions, /countries/us/region/IA and /countries/us/geojson
+  x-derived-on: '2026-09-05'
+  x-api-evangelist-note: Third-party profile. Paths, parameters and enums are read from the server's own published route index; response shapes from live 200 responses on 2026-09-05. Nothing here is invented.
+servers:
+- url: https://www.parentcenterhub.org/wp-json
+  description: CPIR WordPress REST API (Parent Center Hub)
+tags:
+- name: Countries
+  description: ISO 3166-1 country reference records.
+paths:
+  /cn-api/v1/countries:
+    get:
+      operationId: listCountries
+      summary: List countries
+      description: Retrieve the full ISO 3166-1 country reference set. Verified live on 2026-09-05 returning a keyed object of ~250 countries with common, official and native names, alpha-2 and alpha-3 codes, calling code and currency.
+      tags:
+      - Countries
+      parameters:
+      - name: context
+        in: query
+        description: Scope under which the request is made; determines fields present in response.
+        schema:
+          type: string
+          default: view
+      - name: detailed
+        in: query
+        description: Whether to retrieve detailed country data.
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Country records keyed by lowercase alpha-2 code.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/Country'
+  /cn-api/v1/countries/{code}:
+    get:
+      operationId: getCountry
+      summary: Retrieve one country
+      description: Retrieve a single ISO 3166-1 country record by its lowercase alpha-2 code.
+      tags:
+      - Countries
+      parameters:
+      - name: code
+        in: path
+        required: true
+        description: Lowercase ISO 3166-1 alpha-2 country code.
+        schema:
+          type: string
+          pattern: ^[a-z]{2}$
+      - name: context
+        in: query
+        description: Scope under which the request is made; determines fields present in response.
+        schema:
+          type: string
+          default: view
+      responses:
+        '200':
+          description: A single country record.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountryDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  schemas:
+    Error:
+      type: object
+      description: The WordPress REST error envelope, observed live on this host.
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            status:
+              type: integer
+    Country:
+      type: object
+      description: An ISO 3166-1 country reference record as returned by the collection.
+      properties:
+        name:
+          type: string
+        official_name:
+          type: string
+        native_name:
+          type: string
+        native_official_name:
+          type: string
+        iso_3166_1_alpha2:
+          type: string
+          description: ISO 3166-1 alpha-2 code.
+        iso_3166_1_alpha3:
+          type: string
+          description: ISO 3166-1 alpha-3 code.
+        calling_code:
+          type: string
+        currency:
+          type: string
+          description: ISO 4217 currency identifier.
+    CountryDetail:
+      type: object
+      description: The detailed country record returned for a single country.
+      properties:
+        name:
+          type: object
+          properties:
+            common:
+              type: string
+            official:
+              type: string
+            native:
+              type: object
+        demonym:
+          type: string
+        capital:
+          type: string
+  responses:
+    NotFound:
+      description: No resource matched the requested identifier.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

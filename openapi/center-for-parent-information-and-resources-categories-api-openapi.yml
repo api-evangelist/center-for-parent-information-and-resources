@@ -1,0 +1,141 @@
+openapi: 3.2.0
+info:
+  title: CPIR Parent Center Directory Categories API
+  version: cn-api/v1
+  description: Public, unauthenticated read access to the Center for Parent Information and Resources (CPIR) national Parent Center directory — the machine-readable form of the "Find Your Parent Center" finder at parentcenterhub.org/find-your-center/.
+  contact:
+    name: Center for Parent Information and Resources
+    url: https://www.parentcenterhub.org/contact/
+  x-derived-from: https://www.parentcenterhub.org/wp-json/ route index (Connections Business Directory `cn-api/v1` namespace), plus live anonymous GET verification of each documented path
+  x-derived-on: '2026-09-05'
+  x-api-evangelist-note: Third-party profile. CPIR publishes no developer program and no OpenAPI of its own; this documents the anonymously readable directory API that its own site serves. Every path, parameter, enum and default here was read from the server's published route-index schema on 2026-09-05 — nothing is invented. Response shapes were read from live 200 responses. The `/account/*` routes are transcribed from the route index only and were deliberately NOT invoked.
+servers:
+- url: https://www.parentcenterhub.org/wp-json
+  description: CPIR WordPress REST API (Parent Center Hub)
+tags:
+- name: Categories
+  description: The state and territory taxonomy the directory is organised by.
+paths:
+  /cn-api/v1/category:
+    get:
+      operationId: listDirectoryCategories
+      summary: List directory categories
+      description: Retrieve the taxonomy the directory is organised by. Verified live on 2026-09-05 at 55 terms — the 50 US states plus territories and national groupings.
+      tags:
+      - Categories
+      parameters:
+      - name: context
+        in: query
+        schema:
+          type: string
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 1
+        description: Current page of the collection.
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          default: 10
+        description: Maximum number of items to be returned in result set.
+      - name: search
+        in: query
+        schema:
+          type: string
+        description: Limit results to those matching a string.
+      responses:
+        '200':
+          description: A collection of category terms.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+  /cn-api/v1/category/{id}:
+    get:
+      operationId: getDirectoryCategory
+      summary: Retrieve one directory category
+      description: Retrieve a single state or territory term by its numeric identifier.
+      tags:
+      - Categories
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Unique identifier for the term.
+        schema:
+          type: integer
+      - name: context
+        in: query
+        schema:
+          type: string
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      responses:
+        '200':
+          description: A single category term.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  responses:
+    NotFound:
+      description: No resource matched the requested identifier.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      description: The WordPress REST error envelope, observed live on this host. Not RFC 9457 — the media type is `application/json`, not `application/problem+json`.
+      properties:
+        code:
+          type: string
+          description: Machine-readable error slug
+          e.g. `rest_forbidden`.: null
+        message:
+          type: string
+          description: Human-readable message.
+        data:
+          type: object
+          properties:
+            status:
+              type: integer
+              description: The HTTP status code
+              repeated in the body.: null
+    Category:
+      type: object
+      description: A state, territory or grouping term the directory is organised by.
+      properties:
+        id:
+          type: integer
+        count:
+          type: integer
+        description:
+          type: string
+        link:
+          type: string
+          format: uri
+        name:
+          type: string
+        slug:
+          type: string
+        taxonomy:
+          type: string
+        parent:
+          type: integer
+  securitySchemes:
+    cookieNonce:
+      type: apiKey
+      in: header
+      name: X-WP-Nonce
+      description: 'WordPress cookie authentication paired with an `X-WP-Nonce` header. The server advertises `Access-Control-Allow-Headers: Authorization, X-WP-Nonce, Content-Disposition, Content-MD5, Content-Type`. Read routes documented here need no credential.'

@@ -1,0 +1,63 @@
+openapi: 3.2.0
+info:
+  title: CPIR Geography Reference Geometry API
+  version: cn-api/v1
+  description: 'Public, unauthenticated reference data served alongside the CPIR Parent Center directory: ISO 3166-1 country records, their administrative subdivisions (US states and territories with bounding boxes and centroids), and country boundary geometry as GeoJSON. This is the geography layer the "Find Your Parent Center" map is built on. Verified live on 2026-09-05.'
+  contact:
+    name: Center for Parent Information and Resources
+    url: https://www.parentcenterhub.org/contact/
+  x-derived-from: https://www.parentcenterhub.org/wp-json/ route index (`cn-api/v1` namespace) plus live anonymous GET verification of /countries, /countries/us, /countries/us/regions, /countries/us/region/IA and /countries/us/geojson
+  x-derived-on: '2026-09-05'
+  x-api-evangelist-note: Third-party profile. Paths, parameters and enums are read from the server's own published route index; response shapes from live 200 responses on 2026-09-05. Nothing here is invented.
+servers:
+- url: https://www.parentcenterhub.org/wp-json
+  description: CPIR WordPress REST API (Parent Center Hub)
+tags:
+- name: Geometry
+  description: Country boundary geometry as GeoJSON.
+paths:
+  /cn-api/v1/countries/{code}/geojson:
+    get:
+      operationId: getCountryGeoJson
+      summary: Retrieve country boundary geometry
+      description: Retrieve a country's boundary as a GeoJSON FeatureCollection. Verified live on 2026-09-05 for `us`, returning a MultiPolygon feature carrying a `cca2` property.
+      tags:
+      - Geometry
+      parameters:
+      - name: code
+        in: path
+        required: true
+        description: Lowercase ISO 3166-1 alpha-2 country code.
+        schema:
+          type: string
+          pattern: ^[a-z]{2}$
+      responses:
+        '200':
+          description: A GeoJSON FeatureCollection (RFC 7946) describing the country boundary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureCollection'
+components:
+  schemas:
+    FeatureCollection:
+      type: object
+      description: A GeoJSON FeatureCollection as defined by RFC 7946.
+      properties:
+        type:
+          type: string
+          enum:
+          - FeatureCollection
+        features:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                - Feature
+              properties:
+                type: object
+              geometry:
+                type: object

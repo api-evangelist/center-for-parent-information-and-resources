@@ -1,0 +1,166 @@
+openapi: 3.2.0
+info:
+  title: CPIR Parent Center Directory Account API
+  version: cn-api/v1
+  description: Public, unauthenticated read access to the Center for Parent Information and Resources (CPIR) national Parent Center directory — the machine-readable form of the "Find Your Parent Center" finder at parentcenterhub.org/find-your-center/.
+  contact:
+    name: Center for Parent Information and Resources
+    url: https://www.parentcenterhub.org/contact/
+  x-derived-from: https://www.parentcenterhub.org/wp-json/ route index (Connections Business Directory `cn-api/v1` namespace), plus live anonymous GET verification of each documented path
+  x-derived-on: '2026-09-05'
+  x-api-evangelist-note: Third-party profile. CPIR publishes no developer program and no OpenAPI of its own; this documents the anonymously readable directory API that its own site serves. Every path, parameter, enum and default here was read from the server's published route-index schema on 2026-09-05 — nothing is invented. Response shapes were read from live 200 responses. The `/account/*` routes are transcribed from the route index only and were deliberately NOT invoked.
+servers:
+- url: https://www.parentcenterhub.org/wp-json
+  description: CPIR WordPress REST API (Parent Center Hub)
+tags:
+- name: Account
+  description: Visitor account routes exposed by the directory plugin. Gated behind a request nonce; not invoked during profiling.
+paths:
+  /cn-api/v1/account/login:
+    post:
+      operationId: accountLogin
+      summary: Visitor account sign-in
+      description: Transcribed from the published route index; NOT invoked during profiling. Requires a `_cnonce` request token issued by the site, so it is not callable as a standalone API.
+      tags:
+      - Account
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - _cnonce
+              - log
+              - pwd
+              properties:
+                _cnonce:
+                  type: string
+                  description: The request token.
+                log:
+                  type: string
+                  description: Username or email.
+                pwd:
+                  type: string
+                  description: Password.
+                redirect_to:
+                  type: string
+                  description: The URL to redirect to after form submission.
+                rememberme:
+                  type: string
+                  enum:
+                  - '0'
+                  - '1'
+                  description: Remember Me
+      responses:
+        '200':
+          description: Sign-in result.
+  /cn-api/v1/account/register:
+    post:
+      operationId: accountRegister
+      summary: Visitor account registration
+      description: Transcribed from the published route index; NOT invoked during profiling. Requires a `_cnonce` request token.
+      tags:
+      - Account
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - _cnonce
+              - user_login
+              - user_email
+              properties:
+                _cnonce:
+                  type: string
+                  description: The request token.
+                user_login:
+                  type: string
+                  description: Username.
+                user_email:
+                  type: string
+                  description: Email.
+                redirect_to:
+                  type: string
+                  description: The URL to redirect to after form submission.
+      responses:
+        '200':
+          description: Registration result.
+  /cn-api/v1/account/request-reset-password:
+    post:
+      operationId: accountRequestResetPassword
+      summary: Request a password reset
+      description: Transcribed from the published route index; NOT invoked during profiling. Requires a `_cnonce` request token.
+      tags:
+      - Account
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - _cnonce
+              - log
+              properties:
+                _cnonce:
+                  type: string
+                  description: The request token.
+                log:
+                  type: string
+                  description: Username or email.
+                redirect_to:
+                  type: string
+                  description: The URL to redirect to after form submission.
+      responses:
+        '200':
+          description: Reset request result.
+  /cn-api/v1/account/reset-password:
+    post:
+      operationId: accountResetPassword
+      summary: Complete a password reset
+      description: Transcribed from the published route index; NOT invoked during profiling. Requires a `_cnonce` request token and a reset key.
+      tags:
+      - Account
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - _cnonce
+              - pass1
+              - pass2
+              - key
+              properties:
+                _cnonce:
+                  type: string
+                  description: The request token.
+                pass1:
+                  type: string
+                  description: New password.
+                pass2:
+                  type: string
+                  description: Confirm password.
+                pw_weak:
+                  type: boolean
+                  description: Confirm use of weak password.
+                key:
+                  type: string
+                  description: Password reset key.
+                redirect_to:
+                  type: string
+                  description: The URL to redirect to after form submission.
+      responses:
+        '200':
+          description: Reset result.
+components:
+  securitySchemes:
+    cookieNonce:
+      type: apiKey
+      in: header
+      name: X-WP-Nonce
+      description: 'WordPress cookie authentication paired with an `X-WP-Nonce` header. The server advertises `Access-Control-Allow-Headers: Authorization, X-WP-Nonce, Content-Disposition, Content-MD5, Content-Type`. Read routes documented here need no credential.'

@@ -1,0 +1,47 @@
+openapi: 3.2.0
+info:
+  title: CPIR Site Metadata SEO API
+  version: wp/v2
+  description: The anonymously readable metadata layer of the parentcenterhub.org WordPress REST API — the API discovery root, the registered content types, the taxonomies and the publication statuses, plus the Yoast SEO head document for any CPIR URL.
+  contact:
+    name: Center for Parent Information and Resources
+    url: https://www.parentcenterhub.org/contact/
+  x-derived-from: https://www.parentcenterhub.org/wp-json/ route index plus live anonymous GET verification of every documented path on 2026-09-05
+  x-derived-on: '2026-09-05'
+  x-api-evangelist-note: Third-party profile. Only routes that returned a real anonymous 200 are documented as public; the gated collections are recorded in the description rather than presented as a surface.
+servers:
+- url: https://www.parentcenterhub.org/wp-json
+  description: CPIR WordPress REST API (Parent Center Hub)
+tags:
+- name: SEO
+  description: Yoast SEO head document for a CPIR URL.
+paths:
+  /yoast/v1/get_head:
+    get:
+      operationId: getSeoHead
+      summary: Retrieve the SEO head document for a URL
+      description: Return the rendered Yoast SEO `` block for a CPIR URL — title, canonical, robots directives, Open Graph and schema.org JSON-LD. Verified live on 2026-09-05 against the site home page. This is the only anonymously readable route that returns page-level structured data for CPIR content.
+      tags:
+      - SEO
+      parameters:
+      - name: url
+        in: query
+        required: true
+        description: The CPIR URL to retrieve SEO metadata for.
+        schema:
+          type: string
+          format: uri
+      responses:
+        '200':
+          description: The rendered SEO head document.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  html:
+                    type: string
+                    description: The rendered head markup
+                    including schema.org JSON-LD.: null
+        '404':
+          description: The URL is not a resource on this site.

@@ -1,0 +1,77 @@
+openapi: 3.2.0
+info:
+  title: CPIR Site Metadata Discovery API
+  version: wp/v2
+  description: The anonymously readable metadata layer of the parentcenterhub.org WordPress REST API — the API discovery root, the registered content types, the taxonomies and the publication statuses, plus the Yoast SEO head document for any CPIR URL.
+  contact:
+    name: Center for Parent Information and Resources
+    url: https://www.parentcenterhub.org/contact/
+  x-derived-from: https://www.parentcenterhub.org/wp-json/ route index plus live anonymous GET verification of every documented path on 2026-09-05
+  x-derived-on: '2026-09-05'
+  x-api-evangelist-note: Third-party profile. Only routes that returned a real anonymous 200 are documented as public; the gated collections are recorded in the description rather than presented as a surface.
+servers:
+- url: https://www.parentcenterhub.org/wp-json
+  description: CPIR WordPress REST API (Parent Center Hub)
+tags:
+- name: Discovery
+  description: The API root that enumerates every namespace and route on the host.
+paths:
+  /:
+    get:
+      operationId: getApiRoot
+      summary: API discovery root
+      description: Retrieve the WordPress REST API index for parentcenterhub.org — site name, description, URL, timezone, the list of registered namespaces and the full route index with argument schemas for every route. Verified live on 2026-09-05 at 34 namespaces and 717 routes.
+      tags:
+      - Discovery
+      parameters:
+      - name: context
+        in: query
+        description: Scope under which the request is made; determines fields present in response.
+        schema:
+          type: string
+          default: view
+      - name: namespace
+        in: query
+        description: Limit the index to a single namespace.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The API index document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiRoot'
+components:
+  schemas:
+    ApiRoot:
+      type: object
+      description: The WordPress REST API index document.
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+          format: uri
+        home:
+          type: string
+          format: uri
+        gmt_offset:
+          type: number
+        timezone_string:
+          type: string
+        namespaces:
+          type: array
+          items:
+            type: string
+        authentication:
+          type: object
+          description: Advertised authentication schemes. Empty on this host — no REST auth scheme is advertised to anonymous callers.
+        routes:
+          type: object
+          description: Every registered route with its argument schema.
+        site_icon_url:
+          type: string
+          format: uri

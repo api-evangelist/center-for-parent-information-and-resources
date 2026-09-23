@@ -1,0 +1,111 @@
+openapi: 3.2.0
+info:
+  title: CPIR Parent Center Directory Autocomplete API
+  version: cn-api/v1
+  description: Public, unauthenticated read access to the Center for Parent Information and Resources (CPIR) national Parent Center directory — the machine-readable form of the "Find Your Parent Center" finder at parentcenterhub.org/find-your-center/.
+  contact:
+    name: Center for Parent Information and Resources
+    url: https://www.parentcenterhub.org/contact/
+  x-derived-from: https://www.parentcenterhub.org/wp-json/ route index (Connections Business Directory `cn-api/v1` namespace), plus live anonymous GET verification of each documented path
+  x-derived-on: '2026-09-05'
+  x-api-evangelist-note: Third-party profile. CPIR publishes no developer program and no OpenAPI of its own; this documents the anonymously readable directory API that its own site serves. Every path, parameter, enum and default here was read from the server's published route-index schema on 2026-09-05 — nothing is invented. Response shapes were read from live 200 responses. The `/account/*` routes are transcribed from the route index only and were deliberately NOT invoked.
+servers:
+- url: https://www.parentcenterhub.org/wp-json
+  description: CPIR WordPress REST API (Parent Center Hub)
+tags:
+- name: Autocomplete
+  description: Type-ahead lookup over directory fields, backing the finder's search form.
+paths:
+  /cn-api/v1/autocomplete/{type}:
+    get:
+      operationId: autocompleteDirectoryField
+      summary: Type-ahead lookup over a directory field
+      description: Search one indexed directory field and return matching raw records. Backs the finder's search form. Verified live on 2026-09-05 for `organization` and `city`.
+      tags:
+      - Autocomplete
+      parameters:
+      - name: type
+        in: path
+        required: true
+        description: The directory field to search.
+        schema:
+          type: string
+          enum:
+          - name
+          - last_name
+          - title
+          - organization
+          - department
+          - district
+          - county
+          - city
+          - state
+          - zipcode
+          - country
+      - name: context
+        in: query
+        description: Scope under which the request is made; determines fields present in response.
+        schema:
+          type: string
+          default: view
+      - name: page
+        in: query
+        description: Current page of the collection.
+        schema:
+          type: integer
+          default: 1
+      - name: per_page
+        in: query
+        description: Maximum number of items to be returned in result set.
+        schema:
+          type: integer
+          default: 10
+      - name: search
+        in: query
+        description: Limit results to those matching a string.
+        schema:
+          type: string
+      - name: offset
+        in: query
+        description: Offset the result set by a specific number of items.
+        schema:
+          type: integer
+      - name: order
+        in: query
+        description: Order sort attribute ascending or descending.
+        schema:
+          type: string
+          default: asc
+          enum:
+          - asc
+          - desc
+      - name: orderby
+        in: query
+        description: Sort collection by resource attribute.
+        schema:
+          type: string
+          default: name
+          enum:
+          - id
+          - include
+          - name
+          - slug
+          - term_group
+          - description
+          - count
+      responses:
+        '200':
+          description: Matching raw directory rows for the requested field.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+components:
+  securitySchemes:
+    cookieNonce:
+      type: apiKey
+      in: header
+      name: X-WP-Nonce
+      description: 'WordPress cookie authentication paired with an `X-WP-Nonce` header. The server advertises `Access-Control-Allow-Headers: Authorization, X-WP-Nonce, Content-Disposition, Content-MD5, Content-Type`. Read routes documented here need no credential.'
