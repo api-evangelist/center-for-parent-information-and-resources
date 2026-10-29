@@ -1,4 +1,4 @@
-# Center for Parent Information and Resources (center-for-parent-information-and-resources)
+# Center for Parent Information and Resources
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,70 +64,104 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-The Center for Parent Information and Resources (CPIR) is a federally funded central hub of information and products for the national network of Parent Training and Information Centers (PTIs) and Community Parent Resource Centers (CPRCs). CPIR supports families and youth, with a focus on children and youth with disabilities. This repository captures the APIs, developer tools, and machine-readable API artifacts for CPIR.
+The Center for Parent Information and Resources (CPIR) is the federally funded central hub of information and products for the national network of Parent Training and Information Centers (PTIs) and Community Parent Resource Centers (CPRCs). An OSEP-funded project operated by the SPAN Parent Advocacy Network, CPIR supports families and youth with a focus on children with disabilities, delivering resources through the Parent Center Hub website, the Buzz from the Hub newsletter, webinars, glossaries and an events calendar. CPIR runs no developer program and publishes no API documentation, but its own host serves a real anonymous read-only JSON API: the WordPress REST API at parentcenterhub.org/wp-json exposed 34 namespaces and 717 routes on 2026-09-05, including the Connections directory namespace cn-api/v1 that carries the national Parent Center directory (784+ geocoded centers across 55 state and territory terms), plus ISO 3166-1 country reference data, US state geography and GeoJSON, an oEmbed 1.0 provider endpoint, and schema.org structured data. The WordPress content collections (posts, pages, media, users, search) are closed to anonymous callers and return 401 rest_forbidden; article content is available through the site RSS feed.
 
-**URL:** [Visit APIs.json URL](https://raw.githubusercontent.com/api-evangelist/center-for-parent-information-and-resources/refs/heads/main/apis.yml)
+**Areas:** Disability · Education · Families · Federal Government · Parent Centers · Parent Training · Parents · Special Needs
 
-## Scope
+## Center for Parent Information and Resources on APIs.io
 
-- **Type:** Index
-- **Position:** Consumer
-- **Access:** 3rd-Party
+Everything profiled for Center for Parent Information and Resources is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/center-for-parent-information-and-resources/](https://apis.io/providers/center-for-parent-information-and-resources/)** — or go straight to one of the APIs or properties below.
 
-## Tags
+### APIs (1)
 
-- Disability
-- Education
-- Families
-- Federal Government
-- Parent Centers
-- Parent Training
-- Parents
-- Special Needs
+- [Center for Parent Information and Resources Website (WordPress REST)](https://apis.io/apis/center-for-parent-information-and-resources/parentcenterhub-org-website-wordpress-rest/) — The public WordPress REST API (wp-json) of the Center for Parent Information and Resources website at www.parentcenterhub.org: the route index of the site's…
 
-## Timestamps
+### Published properties
 
-- **Created:** 2024-12-03
-- **Modified:** 2026-09-05
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## APIs
+#### MCP servers (1)
 
-CPIR runs no developer program and publishes no API documentation or OpenAPI of its own. Its own host does,
-however, serve a real anonymous read-only JSON API: the WordPress REST API at
-`https://www.parentcenterhub.org/wp-json`, which registered 34 namespaces and 717 routes when profiled on
-2026-09-05. Four surfaces were documented from the route index the site itself publishes, each verified
-against live anonymous responses:
+Model Context Protocol servers that expose the API to agents.
 
-- **CPIR Parent Center Directory API** — the machine-readable form of *Find Your Parent Center*. 784+ Parent
-  Centers (PTIs, CPRCs and regional PTACs) across 55 state and territory terms, each with organization name,
-  work address, geocoded latitude/longitude, phone, email and public link, in vCard/hCard field naming.
-- **CPIR Geography Reference API** — ISO 3166-1 country records, US state centroids and bounding boxes, and
-  country boundary geometry as GeoJSON (RFC 7946).
-- **CPIR oEmbed API** — a conformant oEmbed 1.0 provider endpoint for any CPIR page.
-- **CPIR Site Metadata API** — the discovery root, registered content types and taxonomies, and the Yoast SEO
-  head document carrying schema.org JSON-LD.
+- [center-for-parent-information-and-resources-mcp.yml](https://apis.io/servers/center-for-parent-information-and-resources/center-for-parent-information-and-resources-mcp-yml/)
 
-No credential is required for any of these, and no third party can write to them — CPIR issues no API keys.
+#### Security (2)
 
-**What is not readable:** the WordPress content collections on this host (`/wp/v2/posts`, `/pages`, `/media`,
-`/categories`, `/tags`, `/users`, `/search`) all return `401 rest_forbidden` to an anonymous caller. Article
-content is available through the site RSS feed instead. There is also no MCP server, no A2A agent card, no
-`/.well-known/` document of any kind, no SDK, CLI or GitHub organisation, and no pricing, status page,
-changelog or deprecation policy.
+Authentication, trust centre, and vulnerability disclosure.
 
-The OpenAPI documents in `openapi/` were derived by API Evangelist from CPIR's own published route index
-(archived verbatim at `openapi/_original/`); CPIR did not author them.
+- [Center For Parent Information And Resources Authentication](https://apis.io/security/center-for-parent-information-and-resources/center-for-parent-information-and-resources-authentication/)
+- [Center For Parent Information And Resources Domain Security](https://apis.io/security/center-for-parent-information-and-resources/center-for-parent-information-and-resources-domain-security/)
 
-## Common Properties
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Center For Parent Information And Resources Plans Pricing](https://apis.io/plans/center-for-parent-information-and-resources/center-for-parent-information-and-resources-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Center For Parent Information And Resources Rate Limits](https://apis.io/rate-limits/center-for-parent-information-and-resources/center-for-parent-information-and-resources-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
 - [Website](https://www.parentcenterhub.org)
-- [Newsletter](https://www.parentcenterhub.org/buzz/)
-- [Events](https://www.parentcenterhub.org/events/)
-- [Contact](https://www.parentcenterhub.org/contact/)
-- [Privacy Policy](https://www.parentcenterhub.org/privacy-policy/)
+- [Support](https://www.parentcenterhub.org/contact-us/)
+- [Blog](https://www.parentcenterhub.org/feed/)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
+**Kin Score 15.0** — emerging · rubric 0.24.0 · scored 2026-10-17
 
-**Email:** kin@apievangelist.com
+| Facet | Score |
+|---|---|
+| Discoverability | 57.1 |
+| Contract quality | 0.0 |
+| Contract governance | 18.2 |
+| Operational transparency | 0.0 |
+| Developer ergonomics | 30.4 |
+| Access clarity | 6.6 |
+
+**Agent readiness 8.8** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | — |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 16.7** — Education & Research
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/center-for-parent-information-and-resources/](https://apis.io/providers/center-for-parent-information-and-resources/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Center for Parent Information and Resources: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/center-for-parent-information-and-resources/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
